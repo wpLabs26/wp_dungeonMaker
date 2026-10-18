@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WP Dungeon Builder V1.1</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#eee;background:#17191d}
+*{box-sizing:border-box}body{margin:0;padding:12px}button{min-height:46px;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px;font-weight:650}button:disabled{opacity:.4}button.active{outline:3px solid #78aaff}.bar{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.pieces{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.piece{min-width:0}.sw{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px}.help,.status{font-size:14px;color:#bbb}.workspace{overflow:auto;max-height:58vh;border:1px solid #444;border-radius:12px;padding:10px;background:#202329}.grid{display:grid;grid-template-columns:repeat(16,38px);grid-template-rows:repeat(16,38px);width:max-content;border-left:1px solid #555;border-top:1px solid #555}.cell{min-height:0;width:38px;height:38px;border:0;border-right:1px solid #555;border-bottom:1px solid #555;border-radius:0;padding:0;background:#30343a;color:#fff;font-weight:800}.cell.sel{outline:3px solid #78aaff;outline-offset:-3px}.preview{height:360px;border:1px solid #555;border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(#151820 0 48%,#373a3f 49% 100%)}.info{position:absolute;top:10px;left:10px;right:10px;background:#000b;padding:9px;border-radius:8px}.marker{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);padding:16px;border-radius:12px;font-weight:800}.walls:before,.walls:after{content:"";position:absolute;top:55px;bottom:0;width:34%;background:#555b}.walls:before{left:0;clip-path:polygon(0 0,100% 20%,100% 80%,0 100%)}.walls:after{right:0;clip-path:polygon(0 20%,100% 0,100% 100%,0 80%)}.previewBtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}.exit{grid-column:1/-1}.hidden{display:none}.status{min-height:22px;margin-top:8px}@media(min-width:650px){body{max-width:900px;margin:auto}.pieces{grid-template-columns:repeat(5,1fr)}}
+.table-size{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.table-size label{font-weight:650}.table-size select{min-height:46px;max-width:100%;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px}.table-info{font-size:14px;color:#bbb}
+</style>
+</head>
+<body>
+<h2>WP Dungeon Builder V1.1</h2>
+<section id="builder">
+<div class="bar"><button id="new">New</button><button id="undo">Undo</button><button id="redo">Redo</button><button id="save">Save</button><button id="load">Load</button><button id="export">Export</button><button id="import">Import</button><input id="file" type="file" accept=".wpdungeon,.json" hidden></div>
+<p class="help">Phone-first prototype. Choose a colored piece and tap the grid to place it. Select a tile to rotate, delete, or step inside for a static player-height inspection.</p>
+<div class="table-size"><label for="tableSize">Table size</label><select id="tableSize"><option value="16">Small · 16 × 16</option><option value="20">Medium · 20 × 20</option><option value="24">Large · 24 × 24</option></select><span id="tableInfo" class="table-info" aria-live="polite"></span></div>
+<div class="pieces" id="palette"></div>
+<div class="bar"><button id="select">Select</button><button id="rotate">↻ Rotate</button><button id="delete">Delete</button><button id="step">Step In Here</button></div>
+<div class="workspace"><div class="grid" id="grid"></div></div>
+<div class="status" id="status" role="status">Ready.</div>
+</section>
+<section id="viewer" class="hidden">
+<div class="preview" id="preview"><div class="walls"></div><div class="info" id="info"></div><div class="marker" id="marker">Preview</div></div>
+<div class="previewBtns"><button id="left">↶ Turn Left</button><button id="up">↑ Look Up</button><button id="right">Turn Right ↷</button><button id="down">↓ Look Down</button><button id="level">Level</button><button id="exitView" class="exit">Exit View</button></div>
+</section>
+<script>
+(() => {
+"use strict";
+const TABLE_SIZES = new Map([[16, "Small"], [20, "Medium"], [24, "Large"]]);
+const T = {
+  floor:["Floor","#666","·"], wall:["Wall","#444","▰"],
+  door:["Door","#2878b8","▯"], start:["Start","#26884a","S"],
+  enemy:["Enemy","#b52b35","E"], treasure:["Treasure","#b08a12","T"],
+  trap:["Trap","#c76620","!"], puzzle:["Puzzle","#7445a5","?"],
+  stairs:["Stairs","#999","≋"], pit:["Pit","#181818","×"]
+};
+let W = 16, H = 16;
+let cells = Array(W * H).fill(null), tool = "floor", sel = -1;
+let u = [], r = [], facing = 0, look = 0;
+const $ = id => document.getElementById(id);
+const grid = $("grid"), pal = $("palette"), status = $("status");
+
+function snapshot() { return JSON.stringify({width: W, height: H, cells}); }
+function checkpoint() {
+  u.push(snapshot());
+  if (u.length > 60) u.shift();
+  r = [];
+}
+function restore(saved) {
+  const state = JSON.parse(saved);
+  W = state.width;
+  H = state.height;
+  cells = state.cells;
+  sel = -1;
+  render();
+}
+function msg(text) { status.textContent = text; }
+
+function buildGrid() {
+  const shape = `${W}x${H}`;
+  if (grid.dataset.shape === shape) return;
+  grid.style.gridTemplateColumns = `repeat(${W},38px)`;
+  grid.style.gridTemplateRows = `repeat(${H},38px)`;
+  const fragment = document.createDocumentFragment();
+  for (let i = 0; i < W * H; i++) {
+    const b = document.createElement("button");
+    b.className = "cell";
+    b.onclick = () => {
+      if (tool === "select") {
+        sel = i;
+        render();
+        msg(cells[i]
+          ? `Selected ${T[cells[i].type][0]} at ${i % W},${Math.floor(i / W)}`
+          : `Selected empty tile ${i % W},${Math.floor(i / W)}`);
+        return;
+      }
+      checkpoint();
+      cells[i] = {type: tool, rot: 0};
+      sel = i;
+      render();
+    };
+    fragment.appendChild(b);
+  }
+  grid.replaceChildren(fragment);
+  grid.dataset.shape = shape;
+}
+
+function render() {
+  buildGrid();
+  [...grid.children].forEach((b, i) => {
+    const v = cells[i];
+    b.classList.toggle("sel", i === sel);
+    b.style.background = v ? T[v.type][1] : "#30343a";
+    b.innerHTML = v
+      ? `<span style="display:block;transform:rotate(${v.rot}deg)">${T[v.type][2]}</span>`
+      : "";
+    b.setAttribute("aria-label", `${v ? T[v.type][0] : "Empty"}, column ${i % W + 1}, row ${Math.floor(i / W) + 1}`);
+  });
+  $("tableSize").value = String(W);
+  $("tableInfo").textContent = `${W * H} squares`;
+  $("rotate").disabled = sel < 0 || !cells[sel];
+  $("delete").disabled = sel < 0 || !cells[sel];
+  $("step").disabled = sel < 0 || !cells[sel] || ["wall", "pit"].includes(cells[sel]?.type);
+  $("undo").disabled = !u.length;
+  $("redo").disabled = !r.length;
+}
+
+function resizeTable(side) {
+  if (!TABLE_SIZES.has(side)) {
+    $("tableSize").value = String(W);
+    return;
+  }
+  if (side === W && side === H) return;
+  const outside = cells.reduce((count, v, i) => count +
+    (v && (i % W >= side || Math.floor(i / W) >= side) ? 1 : 0), 0);
+  if (outside) {
+    $("tableSize").value = String(W);
+    msg(`Cannot shrink: ${outside} placed tile${outside === 1 ? " is" : "s are"} outside ${side} × ${side}. Move or delete ${outside === 1 ? "it" : "them"} first.`);
+    return;
+  }
+  const resized = Array(side * side).fill(null);
+  cells.forEach((v, i) => {
+    if (v) resized[Math.floor(i / W) * side + i % W] = v;
+  });
+  checkpoint();
+  W = side;
+  H = side;
+  cells = resized;
+  sel = -1;
+  render();
+  msg(`${TABLE_SIZES.get(side)} table: ${side} × ${side}. Placed tiles kept in position.`);
+}
+$("tableSize").onchange = () => resizeTable(Number($("tableSize").value));
+
+Object.entries(T).forEach(([key, value], n) => {
+  const b = document.createElement("button");
+  b.className = "piece" + (n === 0 ? " active" : "");
+  b.innerHTML = `<span class="sw" style="background:${value[1]}"></span>${value[0]}`;
+  b.onclick = () => {
+    tool = key;
+    sel = -1;
+    document.querySelectorAll(".piece,#select").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    render();
+    msg("Paint: " + value[0]);
+  };
+  pal.appendChild(b);
+});
+$("select").onclick = e => {
+  tool = "select";
+  document.querySelectorAll(".piece").forEach(x => x.classList.remove("active"));
+  e.currentTarget.classList.add("active");
+  msg("Select mode.");
+};
+$("rotate").onclick = () => {
+  if (sel < 0 || !cells[sel]) return;
+  checkpoint();
+  cells[sel].rot = (cells[sel].rot + 90) % 360;
+  render();
+};
+$("delete").onclick = () => {
+  if (sel < 0 || !cells[sel]) return;
+  checkpoint();
+  cells[sel] = null;
+  render();
+  msg("Tile deleted.");
+};
+$("undo").onclick = () => {
+  if (!u.length) return;
+  r.push(snapshot());
+  restore(u.pop());
+  msg("Undone.");
+};
+$("redo").onclick = () => {
+  if (!r.length) return;
+  u.push(snapshot());
+  restore(r.pop());
+  msg("Redone.");
+};
+$("new").onclick = () => {
+  checkpoint();
+  cells = Array(W * H).fill(null);
+  sel = -1;
+  render();
+  msg(`New ${TABLE_SIZES.get(W).toLowerCase()} dungeon.`);
+};
+
+function pack() {
+  return {
+    format: "wpdungeon", formatVersion: 1, width: W, height: H,
+    tiles: cells.map((v, i) => v
+      ? {x: i % W, y: Math.floor(i / W), type: v.type, rotation: v.rot}
+      : null).filter(Boolean)
+  };
+}
+function unpack(d) {
+  if (!d || d.format !== "wpdungeon" || d.formatVersion !== 1 || !Array.isArray(d.tiles)) {
+    throw Error("Invalid WP Dungeon V1 file.");
+  }
+  const width = d.width ?? 16, height = d.height ?? 16;
+  if (!TABLE_SIZES.has(width) || height !== width) {
+    throw Error("Supported tables are 16 × 16, 20 × 20, and 24 × 24. Current dungeon kept.");
+  }
+  const imported = Array(width * height).fill(null);
+  d.tiles.forEach(t => {
+    if (t && Number.isInteger(t.x) && Number.isInteger(t.y) &&
+        t.x >= 0 && t.x < width && t.y >= 0 && t.y < height &&
+        Object.prototype.hasOwnProperty.call(T, t.type)) {
+      imported[t.y * width + t.x] = {
+        type: t.type, rot: [0, 90, 180, 270].includes(t.rotation) ? t.rotation : 0
+      };
+    }
+  });
+  checkpoint();
+  W = width;
+  H = height;
+  cells = imported;
+  sel = -1;
+  render();
+}
+$("save").onclick = () => {
+  try {
+    localStorage.setItem("wpdungeon-v1", JSON.stringify(pack()));
+    msg("Saved on this device/browser.");
+  } catch (e) { msg("Storage unavailable. Use Export."); }
+};
+$("load").onclick = () => {
+  try {
+    const saved = localStorage.getItem("wpdungeon-v1");
+    if (!saved) return msg("No saved dungeon.");
+    unpack(JSON.parse(saved));
+    msg("Dungeon loaded.");
+  } catch (e) { msg(e.message || "Could not load save."); }
+};
+$("export").onclick = () => {
+  const blob = new Blob([JSON.stringify(pack(), null, 2)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Dungeon_01.wpdungeon";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  msg("Dungeon exported.");
+};
+$("import").onclick = () => $("file").click();
+$("file").onchange = async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    unpack(JSON.parse(await file.text()));
+    msg("Dungeon imported.");
+  } catch (x) { msg(x.message || "Invalid WP Dungeon V1 file."); }
+  e.target.value = "";
+};
+
+function view() {
+  const dirs = ["North", "East", "South", "West"], v = cells[sel];
+  $("info").textContent = `Tile ${sel % W},${Math.floor(sel / W)} • Facing ${dirs[(facing % 4 + 4) % 4]} • ${look === 0 ? "Level" : look > 0 ? "Looking up" : "Looking down"}`;
+  $("marker").textContent = T[v.type][0] + " area";
+  $("marker").style.background = T[v.type][1];
+  $("preview").style.transform = `perspective(700px) rotateX(${look * 4}deg)`;
+}
+$("step").onclick = () => {
+  if (sel < 0 || !cells[sel]) return;
+  facing = Math.round(cells[sel].rot / 90);
+  look = 0;
+  $("builder").classList.add("hidden");
+  $("viewer").classList.remove("hidden");
+  view();
+};
+$("left").onclick = () => { facing--; view(); };
+$("right").onclick = () => { facing++; view(); };
+$("up").onclick = () => { look = Math.min(2, look + 1); view(); };
+$("down").onclick = () => { look = Math.max(-2, look - 1); view(); };
+$("level").onclick = () => { look = 0; view(); };
+$("exitView").onclick = () => {
+  $("viewer").classList.add("hidden");
+  $("builder").classList.remove("hidden");
+};
+render();
+})();
+</script>
+</body>
+</html>
