@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WP Dungeon Builder V1</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#eee;background:#17191d}
+*{box-sizing:border-box}body{margin:0;padding:12px}button{min-height:46px;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px;font-weight:650}button:disabled{opacity:.4}button.active{outline:3px solid #78aaff}.bar{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.pieces{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.piece{min-width:0}.sw{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px}.help,.status{font-size:14px;color:#bbb}.workspace{overflow:auto;max-height:58vh;border:1px solid #444;border-radius:12px;padding:10px;background:#202329}.grid{display:grid;grid-template-columns:repeat(16,38px);grid-template-rows:repeat(16,38px);width:max-content;border-left:1px solid #555;border-top:1px solid #555}.cell{min-height:0;width:38px;height:38px;border:0;border-right:1px solid #555;border-bottom:1px solid #555;border-radius:0;padding:0;background:#30343a;color:#fff;font-weight:800}.cell.sel{outline:3px solid #78aaff;outline-offset:-3px}.preview{height:360px;border:1px solid #555;border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(#151820 0 48%,#373a3f 49% 100%)}.info{position:absolute;top:10px;left:10px;right:10px;background:#000b;padding:9px;border-radius:8px}.marker{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);padding:16px;border-radius:12px;font-weight:800}.walls:before,.walls:after{content:"";position:absolute;top:55px;bottom:0;width:34%;background:#555b}.walls:before{left:0;clip-path:polygon(0 0,100% 20%,100% 80%,0 100%)}.walls:after{right:0;clip-path:polygon(0 20%,100% 0,100% 100%,0 80%)}.previewBtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}.exit{grid-column:1/-1}.hidden{display:none}.status{min-height:22px;margin-top:8px}@media(min-width:650px){body{max-width:900px;margin:auto}.pieces{grid-template-columns:repeat(5,1fr)}}
+</style>
+</head>
+<body>
+<h2>WP Dungeon Builder V1</h2>
+<section id="builder">
+<div class="bar"><button id="new">New</button><button id="undo">Undo</button><button id="redo">Redo</button><button id="save">Save</button><button id="load">Load</button><button id="export">Export</button><button id="import">Import</button><input id="file" type="file" accept=".wpdungeon,.json" hidden></div>
+<p class="help">Phone-first prototype. Choose a colored piece and tap the grid to place it. Select a tile to rotate, delete, or step inside for a static player-height inspection.</p>
+<div class="pieces" id="palette"></div>
+<div class="bar"><button id="select">Select</button><button id="rotate">↻ Rotate</button><button id="delete">Delete</button><button id="step">Step In Here</button></div>
+<div class="workspace"><div class="grid" id="grid"></div></div>
+<div class="status" id="status">Ready.</div>
+</section>
+<section id="viewer" class="hidden">
+<div class="preview" id="preview"><div class="walls"></div><div class="info" id="info"></div><div class="marker" id="marker">Preview</div></div>
+<div class="previewBtns"><button id="left">↶ Turn Left</button><button id="up">↑ Look Up</button><button id="right">Turn Right ↷</button><button id="down">↓ Look Down</button><button id="level">Level</button><button id="exitView" class="exit">Exit View</button></div>
+</section>
+<script>
+(()=>{"use strict";
+const W=16,H=16,T={
+floor:["Floor","#666","·"],wall:["Wall","#444","▰"],door:["Door","#2878b8","▯"],start:["Start","#26884a","S"],enemy:["Enemy","#b52b35","E"],treasure:["Treasure","#b08a12","T"],trap:["Trap","#c76620","!"],puzzle:["Puzzle","#7445a5","?"],stairs:["Stairs","#999","≋"],pit:["Pit","#181818","×"]
+};
+let cells=Array(W*H).fill(null),tool="floor",sel=-1,u=[],r=[],facing=0,look=0;
+const $=id=>document.getElementById(id),grid=$("grid"),pal=$("palette"),status=$("status");
+function snapshot(){return JSON.stringify(cells)}
+function checkpoint(){u.push(snapshot());if(u.length>60)u.shift();r=[]}
+function msg(s){status.textContent=s}
+function render(){[...grid.children].forEach((b,i)=>{let v=cells[i];b.classList.toggle("sel",i===sel);b.style.background=v?T[v.type][1]:"#30343a";b.innerHTML=v?`<span style="display:block;transform:rotate(${v.rot}deg)">${T[v.type][2]}</span>`:""});$("rotate").disabled=sel<0||!cells[sel];$("delete").disabled=sel<0||!cells[sel];$("step").disabled=sel<0||!cells[sel]||["wall","pit"].includes(cells[sel]?.type);$("undo").disabled=!u.length;$("redo").disabled=!r.length}
+Object.entries(T).forEach(([k,v],n)=>{let b=document.createElement("button");b.className="piece"+(n===0?" active":"");b.innerHTML=`<span class="sw" style="background:${v[1]}"></span>${v[0]}`;b.onclick=()=>{tool=k;sel=-1;document.querySelectorAll(".piece,#select").forEach(x=>x.classList.remove("active"));b.classList.add("active");render();msg("Paint: "+v[0])};pal.appendChild(b)});
+for(let i=0;i<W*H;i++){let b=document.createElement("button");b.className="cell";b.onclick=()=>{if(tool==="select"){sel=i;render();msg(cells[i]?`Selected ${T[cells[i].type][0]} at ${i%W},${Math.floor(i/W)}`:`Selected empty tile ${i%W},${Math.floor(i/W)}`);return}checkpoint();cells[i]={type:tool,rot:0};sel=i;render()};grid.appendChild(b)}
+$("select").onclick=e=>{tool="select";document.querySelectorAll(".piece").forEach(x=>x.classList.remove("active"));e.currentTarget.classList.add("active");msg("Select mode.")};
+$("rotate").onclick=()=>{if(sel<0||!cells[sel])return;checkpoint();cells[sel].rot=(cells[sel].rot+90)%360;render()};
+$("delete").onclick=()=>{if(sel<0||!cells[sel])return;checkpoint();cells[sel]=null;render();msg("Tile deleted.")};
+$("undo").onclick=()=>{if(!u.length)return;r.push(snapshot());cells=JSON.parse(u.pop());sel=-1;render()};
+$("redo").onclick=()=>{if(!r.length)return;u.push(snapshot());cells=JSON.parse(r.pop());sel=-1;render()};
+$("new").onclick=()=>{checkpoint();cells=Array(W*H).fill(null);sel=-1;render();msg("New dungeon.")};
+function pack(){return{format:"wpdungeon",formatVersion:1,width:W,height:H,tiles:cells.map((v,i)=>v?{x:i%W,y:Math.floor(i/W),type:v.type,rotation:v.rot}:null).filter(Boolean)}}
+function unpack(d){if(!d||d.format!=="wpdungeon"||d.formatVersion!==1||!Array.isArray(d.tiles))throw Error();checkpoint();cells=Array(W*H).fill(null);d.tiles.forEach(t=>{if(Number.isInteger(t.x)&&Number.isInteger(t.y)&&t.x>=0&&t.x<W&&t.y>=0&&t.y<H&&T[t.type])cells[t.y*W+t.x]={type:t.type,rot:[0,90,180,270].includes(t.rotation)?t.rotation:0}});sel=-1;render()}
+$("save").onclick=()=>{try{localStorage.setItem("wpdungeon-v1",JSON.stringify(pack()));msg("Saved on this device/browser.")}catch(e){msg("Storage unavailable. Use Export.")}};
+$("load").onclick=()=>{try{let s=localStorage.getItem("wpdungeon-v1");if(!s)return msg("No saved dungeon.");unpack(JSON.parse(s));msg("Dungeon loaded.")}catch(e){msg("Could not load save.")}};
+$("export").onclick=()=>{let blob=new Blob([JSON.stringify(pack(),null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Dungeon_01.wpdungeon";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);msg("Dungeon exported.")};
+$("import").onclick=()=>$("file").click();$("file").onchange=async e=>{let f=e.target.files[0];if(!f)return;try{unpack(JSON.parse(await f.text()));msg("Dungeon imported.")}catch(x){msg("Invalid WP Dungeon V1 file.")}e.target.value=""};
+function view(){let dirs=["North","East","South","West"],v=cells[sel];$("info").textContent=`Tile ${sel%W},${Math.floor(sel/W)} • Facing ${dirs[(facing%4+4)%4]} • ${look===0?"Level":look>0?"Looking up":"Looking down"}`;$("marker").textContent=T[v.type][0]+" area";$("marker").style.background=T[v.type][1];$("preview").style.transform=`perspective(700px) rotateX(${look*4}deg)`}
+$("step").onclick=()=>{if(sel<0||!cells[sel])return;facing=Math.round(cells[sel].rot/90);look=0;$("builder").classList.add("hidden");$("viewer").classList.remove("hidden");view()};
+$("left").onclick=()=>{facing--;view()};$("right").onclick=()=>{facing++;view()};$("up").onclick=()=>{look=Math.min(2,look+1);view()};$("down").onclick=()=>{look=Math.max(-2,look-1);view()};$("level").onclick=()=>{look=0;view()};$("exitView").onclick=()=>{$("viewer").classList.add("hidden");$("builder").classList.remove("hidden")};
+render();
+})();
+</script>
+</body>
+</html>
