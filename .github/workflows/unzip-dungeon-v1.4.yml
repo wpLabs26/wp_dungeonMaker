@@ -1,0 +1,56 @@
+name: Unzip Dungeon V1.4
+"on": workflow_dispatch
+permissions:
+  contents: write
+  pages: write
+concurrency: install-dungeon-v1-4
+jobs:
+  install:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - name: Verify both ZIPs and extract the update
+        shell: python
+        run: |
+          from pathlib import Path
+          import hashlib, zipfile
+          expected = {"WP-Dungeon-Builder-V1.4-Part-1.zip": "9abe0257b0a51d72b0db843b42de506333c17433790d13ca89a90b5ce7e770e4", "WP-Dungeon-Builder-V1.4-Part-2.zip": "1aa4387e0134b99c86a3bab2fcadea3d109329ad2ca00836a5aff79bf1019adb"}
+          root = Path.cwd().resolve()
+          files = {}
+          for name, digest in expected.items():
+              archive = root / name
+              if not archive.exists():
+                  raise SystemExit('Upload both Part-1.zip and Part-2.zip files to the repository root first.')
+              if hashlib.sha256(archive.read_bytes()).hexdigest() != digest:
+                  raise SystemExit('ZIP does not match the supplied update: ' + name)
+              with zipfile.ZipFile(archive) as z:
+                  for entry in z.infolist():
+                      target = (root / entry.filename).resolve()
+                      if not target.is_relative_to(root) or entry.filename in ('index.html', 'index-3.html'):
+                          raise SystemExit('Unexpected archive path: ' + entry.filename)
+                      if not entry.is_dir():
+                          files[target] = z.read(entry)
+          for target, content in files.items():
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(content)
+          print('Extracted', len(files), 'files. Version 3 kept intact.')
+      - name: Check builder and texture catalog
+        run: |
+          node tests/builder-checks.cjs
+          node tests/map-set-checks.cjs
+      - name: Commit version 4 and textures
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- index-4.html WORN_DUNGEON_README.md assets/map-sets examples/Worn_Dungeon_Asset_Check.wpdungeon tests/builder-checks.cjs tests/map-set-checks.cjs
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add Dungeon Builder V1.4 and Worn Dungeon textures'
+            git push origin HEAD:main
+          fi
+      - name: Publish the updated GitHub Pages site
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
