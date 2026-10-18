@@ -8,6 +8,7 @@
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#eee;background:#17191d}
 *{box-sizing:border-box}body{margin:0;padding:12px}button{min-height:46px;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px;font-weight:650}button:disabled{opacity:.4}button.active{outline:3px solid #78aaff}.bar{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.pieces{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.piece{min-width:0}.sw{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px}.help,.status{font-size:14px;color:#bbb}.workspace{overflow:auto;max-height:58vh;border:1px solid #444;border-radius:12px;padding:10px;background:#202329}.grid{display:grid;grid-template-columns:repeat(16,38px);grid-template-rows:repeat(16,38px);width:max-content;border-left:1px solid #555;border-top:1px solid #555}.cell{min-height:0;width:38px;height:38px;border:0;border-right:1px solid #555;border-bottom:1px solid #555;border-radius:0;padding:0;background:#30343a;color:#fff;font-weight:800}.cell.sel{outline:3px solid #78aaff;outline-offset:-3px}.preview{height:360px;border:1px solid #555;border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(#151820 0 48%,#373a3f 49% 100%)}.info{position:absolute;top:10px;left:10px;right:10px;background:#000b;padding:9px;border-radius:8px}.marker{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);padding:16px;border-radius:12px;font-weight:800}.walls:before,.walls:after{content:"";position:absolute;top:55px;bottom:0;width:34%;background:#555b}.walls:before{left:0;clip-path:polygon(0 0,100% 20%,100% 80%,0 100%)}.walls:after{right:0;clip-path:polygon(0 20%,100% 0,100% 100%,0 80%)}.previewBtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}.exit{grid-column:1/-1}.hidden{display:none}.status{min-height:22px;margin-top:8px}@media(min-width:650px){body{max-width:900px;margin:auto}.pieces{grid-template-columns:repeat(5,1fr)}}
 .table-size{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.table-size label{font-weight:650}.table-size select{min-height:46px;max-width:100%;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px}.table-info{font-size:14px;color:#bbb}
+.dungeon-name{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.dungeon-name label{font-weight:650}.dungeon-name input{flex:1 1 220px;min-width:0;max-width:100%;min-height:46px;font:inherit;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px}.dungeon-name input::placeholder{color:#aaa}
 .palette-group{margin:14px 0}.palette-group h3{font-size:14px;margin:0 0 7px;color:#c8ccd3}.palette-group .pieces{grid-template-columns:repeat(3,minmax(0,1fr))}.palette-group.features .pieces{grid-template-columns:repeat(2,minmax(0,1fr))}.piece{text-align:left;display:flex;gap:7px;align-items:center}.tile-swatch{display:inline-block;flex:0 0 20px;width:20px;height:20px;border-radius:3px}.cell{position:relative;overflow:hidden}.tile-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:18px;text-shadow:0 1px 3px #000}.marker{color:#fff;text-shadow:0 1px 4px #000,0 0 4px #000}
 .tile-floor{background-color:#777b7d;background-image:linear-gradient(#373c414d 1px,transparent 1px),linear-gradient(90deg,#373c414d 1px,transparent 1px);background-size:19px 19px}
 .tile-floorWood{background-color:#8b653e;background-image:repeating-linear-gradient(90deg,transparent 0 9px,#362717a8 9px 11px),repeating-linear-gradient(0deg,transparent 0 24px,#48311e80 24px 25px)}
@@ -32,6 +33,7 @@ details.palette-group .pieces{grid-template-columns:repeat(2,minmax(0,1fr))}@med
 <section id="builder">
 <div class="bar"><button id="new">New</button><button id="undo">Undo</button><button id="redo">Redo</button><button id="save">Save</button><button id="load">Load</button><button id="export">Export</button><button id="import">Import</button><input id="file" type="file" accept=".wpdungeon,.json" hidden></div>
 <p class="help">Choose a floor, wall, or feature and tap the grid to place it. Select a tile to rotate, delete, or step inside for a static player-height inspection.</p>
+<div class="dungeon-name"><label for="dungeonName">Dungeon name</label><input id="dungeonName" type="text" maxlength="80" placeholder="Dungeon_01" autocomplete="off" enterkeyhint="done"></div>
 <div class="table-size"><label for="tableSize">Table size</label><select id="tableSize"><option value="16">Small · 16 × 16</option><option value="20">Medium · 20 × 20</option><option value="24">Large · 24 × 24</option></select><span id="tableInfo" class="table-info" aria-live="polite"></span></div>
 <div id="palette"></div>
 <div class="bar"><button id="select">Select</button><button id="rotate">↻ Rotate</button><button id="rotateDecor" hidden>↻ Decoration</button><button id="removeDecor" hidden>Remove decoration</button><button id="delete">Delete</button><button id="step">Step In Here</button></div>
@@ -50,6 +52,7 @@ const TABLE_SIZES = new Map([[16, "Small"], [20, "Medium"], [24, "Large"]]);
 // Only one set is available today; Step In can use its shared textures later.
 const DEFAULT_MAP_SET = Object.freeze({id:"worn-dungeon", version:1});
 let mapSet = {...DEFAULT_MAP_SET};
+let dungeonName = "", editingDungeonName = false;
 const T = {
   floor: {label:"Stone floor", short:"Stone", color:"#777b7d", symbol:"·", base:"floor"},
   floorWood: {label:"Timber floor", short:"Timber", color:"#8b653e", symbol:"", base:"floor", variant:"timber"},
@@ -107,8 +110,9 @@ let u = [], r = [], facing = 0, look = 0;
 const $ = id => document.getElementById(id);
 const grid = $("grid"), pal = $("palette"), status = $("status");
 
-function snapshot() { return JSON.stringify({width: W, height: H, cells, decorations, mapSet}); }
+function snapshot() { return JSON.stringify({width: W, height: H, cells, decorations, mapSet, dungeonName}); }
 function checkpoint() {
+  editingDungeonName = false;
   u.push(snapshot());
   if (u.length > 60) u.shift();
   r = [];
@@ -120,10 +124,40 @@ function restore(saved) {
   cells = state.cells;
   decorations = state.decorations || Array(W * H).fill(null);
   mapSet = state.mapSet ? {...state.mapSet} : null;
+  dungeonName = state.dungeonName || "";
+  editingDungeonName = false;
   sel = -1;
   render();
 }
 function msg(text) { status.textContent = text; }
+function normalizeDungeonName(value) {
+  return Array.from(value.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim()).slice(0, 80).join("");
+}
+function dungeonFilename() {
+  let stem = dungeonName.normalize("NFKC")
+    .replace(/(?:\.wpdungeon(?:\.json)?|\.json)$/i, "")
+    .replace(/[<>:"/\\|?*\u0000-\u001f\u007f]/g, "_")
+    .replace(/\s+/g, "_").replace(/_+/g, "_")
+    .replace(/^[._]+|[._]+$/g, "");
+  stem = Array.from(stem).slice(0, 60).join("").replace(/[._]+$/g, "") || "Dungeon_01";
+  if (/^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\.|$)/i.test(stem)) stem = "Dungeon_" + stem;
+  return stem + ".wpdungeon";
+}
+$("dungeonName").oninput = () => {
+  const nextName = normalizeDungeonName($("dungeonName").value);
+  if (nextName === dungeonName) return;
+  // One undo step for a typing session, without rebuilding the grid or moving the cursor.
+  if (!editingDungeonName) { checkpoint(); editingDungeonName = true; }
+  dungeonName = nextName;
+  $("undo").disabled = !u.length;
+  $("redo").disabled = !r.length;
+};
+function finishNaming() {
+  editingDungeonName = false;
+  $("dungeonName").value = dungeonName;
+}
+$("dungeonName").onchange = finishNaming;
+$("dungeonName").onblur = finishNaming;
 function pieceLabel(piece) {
   const label = T[piece.type].label;
   if (T[piece.type].base !== "wall" || !piece.shape) return label;
@@ -203,6 +237,7 @@ function render() {
     b.setAttribute("aria-label", `${cellLabel(i)}, column ${i % W + 1}, row ${Math.floor(i / W) + 1}`);
   });
   $("tableSize").value = String(W);
+  $("dungeonName").value = dungeonName;
   $("tableInfo").textContent = `${W * H} squares`;
   $("rotate").disabled = sel < 0 || !cells[sel];
   $("delete").disabled = sel < 0 || (!cells[sel] && !decorations[sel]);
@@ -348,6 +383,7 @@ $("redo").onclick = () => {
 };
 $("new").onclick = () => {
   checkpoint();
+  dungeonName = "";
   if (!mapSet) mapSet = {...DEFAULT_MAP_SET};
   cells = Array(W * H).fill(null);
   decorations = Array(W * H).fill(null);
@@ -362,6 +398,7 @@ function pack() {
     : null).filter(Boolean);
   return {
     format: "wpdungeon", formatVersion: 1, width: W, height: H,
+    ...(dungeonName ? {name:dungeonName} : {}),
     ...(mapSet ? {mapSet:{...mapSet}} : {}),
     tiles: cells.map((v, i) => {
       if (!v) return null;
@@ -380,6 +417,10 @@ function unpack(d) {
   if (d.decorations !== undefined && !Array.isArray(d.decorations)) {
     throw Error("Invalid decorations. Current dungeon kept.");
   }
+  if (d.name !== undefined && typeof d.name !== "string") {
+    throw Error("Invalid dungeon name. Current dungeon kept.");
+  }
+  const importedName = normalizeDungeonName(d.name || "");
   let importedMapSet = null;
   if (d.mapSet !== undefined) {
     const candidate = d.mapSet;
@@ -428,9 +469,11 @@ function unpack(d) {
   cells = imported;
   decorations = importedDecor;
   mapSet = importedMapSet;
+  dungeonName = importedName;
   sel = -1;
   render();
   const notes = [];
+  if (typeof d.name === "string" && Array.from(d.name).length > 80) notes.push("Dungeon name shortened to 80 characters.");
   if (replacedMarkers) notes.push(`${replacedMarkers} old card/stair marker${replacedMarkers === 1 ? "" : "s"} changed to floor.`);
   if (convertedPits) notes.push(`${convertedPits} old pit tile${convertedPits === 1 ? "" : "s"} restored as decorative pits.`);
   return notes.length ? " " + notes.join(" ") : "";
@@ -453,10 +496,10 @@ $("export").onclick = () => {
   const blob = new Blob([JSON.stringify(pack(), null, 2)], {type: "application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "Dungeon_01.wpdungeon";
+  a.download = dungeonFilename();
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  msg("Dungeon exported.");
+  msg("Exported: " + a.download);
 };
 $("import").onclick = () => $("file").click();
 $("file").onchange = async e => {
