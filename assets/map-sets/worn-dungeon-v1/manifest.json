@@ -1,0 +1,620 @@
+{
+  "format": "wpdungeon-map-set",
+  "formatVersion": 1,
+  "id": "worn-dungeon",
+  "version": 1,
+  "displayName": "Worn Dungeon",
+  "status": "surface-textures-and-mapping",
+  "mapFormat": {
+    "format": "wpdungeon",
+    "formatVersion": 1
+  },
+  "textureRole": "Base-color images only; not complete PBR materials.",
+  "identity": {
+    "mapField": "mapSet",
+    "example": {
+      "id": "worn-dungeon",
+      "version": 1
+    },
+    "missingMapSet": "Use the loader's existing legacy appearance; offer Worn Dungeon as an explicit default for new maps.",
+    "unknownMapSet": "Preserve the requested id/version. Warn in the importing tool and offer a deliberate fallback; do not silently rewrite the map."
+  },
+  "matching": {
+    "nullMeaning": "variant:null and wallShape:null match an absent field, null or empty string.",
+    "selection": "Match layer, type, normalized variant and normalized wallShape. Rotation is applied after object selection.",
+    "paths": "Texture paths are relative to this manifest, resolved through the trusted catalog. Never derive filesystem paths from an imported map-set id."
+  },
+  "materials": [
+    {
+      "id": "stone-floor",
+      "baseColorTexture": "textures/stone-floor.png",
+      "colorSpace": "sRGB",
+      "wrap": "repeat",
+      "recommendedMaxSize": 1024,
+      "metallic": 0,
+      "smoothness": 0.08,
+      "normalMap": null,
+      "notes": "Suggested starting material values; tune in the existing Unity render pipeline."
+    },
+    {
+      "id": "stone-wall",
+      "baseColorTexture": "textures/stone-wall.png",
+      "colorSpace": "sRGB",
+      "wrap": "repeat",
+      "recommendedMaxSize": 1024,
+      "metallic": 0,
+      "smoothness": 0.05,
+      "normalMap": null,
+      "notes": "Suggested starting material values; tune in the existing Unity render pipeline."
+    },
+    {
+      "id": "brick-wall",
+      "baseColorTexture": "textures/brick-wall.png",
+      "colorSpace": "sRGB",
+      "wrap": "repeat",
+      "recommendedMaxSize": 1024,
+      "metallic": 0,
+      "smoothness": 0.05,
+      "normalMap": null,
+      "notes": "Suggested starting material values; tune in the existing Unity render pipeline."
+    },
+    {
+      "id": "timber",
+      "baseColorTexture": "textures/timber.png",
+      "colorSpace": "sRGB",
+      "wrap": "repeat",
+      "recommendedMaxSize": 1024,
+      "metallic": 0,
+      "smoothness": 0.12,
+      "normalMap": null,
+      "notes": "Suggested starting material values; tune in the existing Unity render pipeline."
+    },
+    {
+      "id": "earth",
+      "baseColorTexture": "textures/earth.png",
+      "colorSpace": "sRGB",
+      "wrap": "repeat",
+      "recommendedMaxSize": 1024,
+      "metallic": 0,
+      "smoothness": 0.02,
+      "normalMap": null,
+      "notes": "Suggested starting material values; tune in the existing Unity render pipeline."
+    },
+    {
+      "id": "water",
+      "baseColorTexture": "textures/water.png",
+      "colorSpace": "sRGB",
+      "wrap": "repeat",
+      "recommendedMaxSize": 1024,
+      "metallic": 0,
+      "smoothness": 0.55,
+      "normalMap": null,
+      "notes": "Static color base only. Water motion, normals, transparency and foam require shader work."
+    },
+    {
+      "id": "iron",
+      "baseColorTexture": "textures/iron.png",
+      "colorSpace": "sRGB",
+      "wrap": "repeat",
+      "recommendedMaxSize": 1024,
+      "metallic": 0.65,
+      "smoothness": 0.18,
+      "normalMap": null,
+      "notes": "Suggested starting material values; tune in the existing Unity render pipeline."
+    },
+    {
+      "id": "bone",
+      "baseColorTexture": "textures/bone.png",
+      "colorSpace": "sRGB",
+      "wrap": "repeat",
+      "recommendedMaxSize": 1024,
+      "metallic": 0,
+      "smoothness": 0.1,
+      "normalMap": null,
+      "notes": "Suggested starting material values; tune in the existing Unity render pipeline."
+    },
+    {
+      "id": "pit-dark",
+      "baseColor": "#101215",
+      "metallic": 0,
+      "smoothness": 0
+    },
+    {
+      "id": "cobweb",
+      "baseColor": "#c8c2ac",
+      "metallic": 0,
+      "smoothness": 0
+    },
+    {
+      "id": "start-marker",
+      "baseColor": "#438653",
+      "metallic": 0,
+      "smoothness": 0.1
+    },
+    {
+      "id": "end-marker",
+      "baseColor": "#b08b3f",
+      "metallic": 0,
+      "smoothness": 0.1
+    },
+    {
+      "id": "flame",
+      "baseColor": "#e9a34f",
+      "metallic": 0,
+      "smoothness": 0,
+      "notes": "Optional emissive accent on a visual torch; no gameplay or realtime light is implied."
+    }
+  ],
+  "prefabs": [
+    {
+      "id": "floor-tile",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "pit-scenery-tile",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "water-scenery-tile",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "bridge",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "start-tile",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "end-tile",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "door",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "wall-solid-legacy",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "wall-straight",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "wall-corner",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-waterfall",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-fountain",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-bones",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-barrel",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-crate",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-rubble",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-cobweb",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-torch",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-statue",
+      "status": "requires-unity-prefab-and-loader-binding"
+    },
+    {
+      "id": "decor-column",
+      "status": "requires-unity-prefab-and-loader-binding"
+    }
+  ],
+  "objects": [
+    {
+      "id": "floor.stone",
+      "layer": "tiles",
+      "match": {
+        "type": "floor",
+        "variant": null
+      },
+      "prefabKey": "floor-tile",
+      "materialIds": [
+        "stone-floor"
+      ]
+    },
+    {
+      "id": "floor.timber",
+      "layer": "tiles",
+      "match": {
+        "type": "floor",
+        "variant": "timber"
+      },
+      "prefabKey": "floor-tile",
+      "materialIds": [
+        "timber"
+      ]
+    },
+    {
+      "id": "floor.earth",
+      "layer": "tiles",
+      "match": {
+        "type": "floor",
+        "variant": "earth"
+      },
+      "prefabKey": "floor-tile",
+      "materialIds": [
+        "earth"
+      ]
+    },
+    {
+      "id": "floor.pit",
+      "layer": "tiles",
+      "match": {
+        "type": "floor",
+        "variant": "pit"
+      },
+      "prefabKey": "pit-scenery-tile",
+      "materialIds": [
+        "stone-wall",
+        "pit-dark"
+      ],
+      "visualOnly": true,
+      "notes": "Visual recessed pit only. This does not introduce falling, damage or a level transition."
+    },
+    {
+      "id": "floor.water",
+      "layer": "tiles",
+      "match": {
+        "type": "floor",
+        "variant": "water"
+      },
+      "prefabKey": "water-scenery-tile",
+      "materialIds": [
+        "stone-floor",
+        "water"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "floor.bridge",
+      "layer": "tiles",
+      "match": {
+        "type": "floor",
+        "variant": "bridge"
+      },
+      "prefabKey": "bridge",
+      "materialIds": [
+        "timber",
+        "iron"
+      ]
+    },
+    {
+      "id": "marker.start",
+      "layer": "tiles",
+      "match": {
+        "type": "start",
+        "variant": null
+      },
+      "prefabKey": "start-tile",
+      "materialIds": [
+        "stone-floor",
+        "start-marker"
+      ]
+    },
+    {
+      "id": "marker.end",
+      "layer": "tiles",
+      "match": {
+        "type": "floor",
+        "variant": "end"
+      },
+      "prefabKey": "end-tile",
+      "materialIds": [
+        "stone-floor",
+        "end-marker"
+      ]
+    },
+    {
+      "id": "door",
+      "layer": "tiles",
+      "match": {
+        "type": "door",
+        "variant": null
+      },
+      "prefabKey": "door",
+      "materialIds": [
+        "timber",
+        "iron",
+        "stone-wall"
+      ]
+    },
+    {
+      "id": "wall.stone.legacy",
+      "layer": "tiles",
+      "match": {
+        "type": "wall",
+        "variant": null,
+        "wallShape": null
+      },
+      "prefabKey": "wall-solid-legacy",
+      "materialIds": [
+        "stone-wall"
+      ]
+    },
+    {
+      "id": "wall.stone.straight",
+      "layer": "tiles",
+      "match": {
+        "type": "wall",
+        "variant": null,
+        "wallShape": "straight"
+      },
+      "prefabKey": "wall-straight",
+      "materialIds": [
+        "stone-wall"
+      ]
+    },
+    {
+      "id": "wall.stone.corner",
+      "layer": "tiles",
+      "match": {
+        "type": "wall",
+        "variant": null,
+        "wallShape": "corner"
+      },
+      "prefabKey": "wall-corner",
+      "materialIds": [
+        "stone-wall"
+      ]
+    },
+    {
+      "id": "wall.brick.legacy",
+      "layer": "tiles",
+      "match": {
+        "type": "wall",
+        "variant": "brick",
+        "wallShape": null
+      },
+      "prefabKey": "wall-solid-legacy",
+      "materialIds": [
+        "brick-wall"
+      ]
+    },
+    {
+      "id": "wall.brick.straight",
+      "layer": "tiles",
+      "match": {
+        "type": "wall",
+        "variant": "brick",
+        "wallShape": "straight"
+      },
+      "prefabKey": "wall-straight",
+      "materialIds": [
+        "brick-wall"
+      ]
+    },
+    {
+      "id": "wall.brick.corner",
+      "layer": "tiles",
+      "match": {
+        "type": "wall",
+        "variant": "brick",
+        "wallShape": "corner"
+      },
+      "prefabKey": "wall-corner",
+      "materialIds": [
+        "brick-wall"
+      ]
+    },
+    {
+      "id": "wall.timber.legacy",
+      "layer": "tiles",
+      "match": {
+        "type": "wall",
+        "variant": "timber",
+        "wallShape": null
+      },
+      "prefabKey": "wall-solid-legacy",
+      "materialIds": [
+        "timber"
+      ]
+    },
+    {
+      "id": "wall.timber.straight",
+      "layer": "tiles",
+      "match": {
+        "type": "wall",
+        "variant": "timber",
+        "wallShape": "straight"
+      },
+      "prefabKey": "wall-straight",
+      "materialIds": [
+        "timber"
+      ]
+    },
+    {
+      "id": "wall.timber.corner",
+      "layer": "tiles",
+      "match": {
+        "type": "wall",
+        "variant": "timber",
+        "wallShape": "corner"
+      },
+      "prefabKey": "wall-corner",
+      "materialIds": [
+        "timber"
+      ]
+    },
+    {
+      "id": "decor.waterfall",
+      "layer": "decorations",
+      "match": {
+        "type": "waterfall"
+      },
+      "prefabKey": "decor-waterfall",
+      "materialIds": [
+        "stone-wall",
+        "water"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "decor.fountain",
+      "layer": "decorations",
+      "match": {
+        "type": "fountain"
+      },
+      "prefabKey": "decor-fountain",
+      "materialIds": [
+        "stone-floor",
+        "water"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "decor.bones",
+      "layer": "decorations",
+      "match": {
+        "type": "bones"
+      },
+      "prefabKey": "decor-bones",
+      "materialIds": [
+        "bone"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "decor.barrel",
+      "layer": "decorations",
+      "match": {
+        "type": "barrel"
+      },
+      "prefabKey": "decor-barrel",
+      "materialIds": [
+        "timber",
+        "iron"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "decor.crate",
+      "layer": "decorations",
+      "match": {
+        "type": "crate"
+      },
+      "prefabKey": "decor-crate",
+      "materialIds": [
+        "timber"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "decor.rubble",
+      "layer": "decorations",
+      "match": {
+        "type": "rubble"
+      },
+      "prefabKey": "decor-rubble",
+      "materialIds": [
+        "stone-wall"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "decor.cobweb",
+      "layer": "decorations",
+      "match": {
+        "type": "cobweb"
+      },
+      "prefabKey": "decor-cobweb",
+      "materialIds": [
+        "cobweb"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "decor.torch",
+      "layer": "decorations",
+      "match": {
+        "type": "torch"
+      },
+      "prefabKey": "decor-torch",
+      "materialIds": [
+        "timber",
+        "iron",
+        "flame"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "decor.statue",
+      "layer": "decorations",
+      "match": {
+        "type": "statue"
+      },
+      "prefabKey": "decor-statue",
+      "materialIds": [
+        "stone-floor"
+      ],
+      "visualOnly": true
+    },
+    {
+      "id": "decor.column",
+      "layer": "decorations",
+      "match": {
+        "type": "column"
+      },
+      "prefabKey": "decor-column",
+      "materialIds": [
+        "stone-floor"
+      ],
+      "visualOnly": true
+    }
+  ],
+  "orientation": {
+    "straightWall0": "Horizontal, east-west.",
+    "cornerWall0": "North and east arms; then 90=SE, 180=SW, 270=NW.",
+    "rotations": [
+      0,
+      90,
+      180,
+      270
+    ],
+    "bridge0": "North-south, as shown in the builder.",
+    "note": "Adapt asset-local orientation to the existing loader's coordinate system. Verify all four directions before saving prefabs."
+  },
+  "gameplay": {
+    "decorations": "Visual only. No collision, loot, damage, traps, puzzles or combat behavior.",
+    "pitAndWater": "Visual scenery only; preserve the existing movement and collision policy.",
+    "excluded": [
+      "chests",
+      "enemies",
+      "traps",
+      "puzzles",
+      "poison",
+      "stairs-to-other-levels"
+    ]
+  },
+  "futureBrowser": {
+    "renderer": "Step In texture rendering is not implemented in this update.",
+    "textureSource": "Use this catalog's material IDs and baseColorTexture paths for future builder previews."
+  }
+}

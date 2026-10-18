@@ -1,0 +1,16 @@
+{
+  "format": "wpdungeon-map-set-catalog",
+  "formatVersion": 1,
+  "default": {
+    "id": "worn-dungeon",
+    "version": 1
+  },
+  "sets": [
+    {
+      "id": "worn-dungeon",
+      "version": 1,
+      "label": "Worn Dungeon",
+      "manifest": "worn-dungeon-v1/manifest.json"
+    }
+  ]
+}

@@ -1,0 +1,354 @@
+{
+  "format": "wpdungeon",
+  "formatVersion": 1,
+  "width": 16,
+  "height": 16,
+  "mapSet": {
+    "id": "worn-dungeon",
+    "version": 1
+  },
+  "tiles": [
+    {
+      "x": 2,
+      "y": 2,
+      "type": "floor",
+      "rotation": 0
+    },
+    {
+      "x": 3,
+      "y": 2,
+      "type": "floor",
+      "rotation": 0,
+      "variant": "timber"
+    },
+    {
+      "x": 4,
+      "y": 2,
+      "type": "floor",
+      "rotation": 0,
+      "variant": "earth"
+    },
+    {
+      "x": 5,
+      "y": 2,
+      "type": "floor",
+      "rotation": 0,
+      "variant": "pit"
+    },
+    {
+      "x": 6,
+      "y": 2,
+      "type": "floor",
+      "rotation": 0,
+      "variant": "water"
+    },
+    {
+      "x": 7,
+      "y": 2,
+      "type": "floor",
+      "rotation": 0,
+      "variant": "bridge"
+    },
+    {
+      "x": 8,
+      "y": 2,
+      "type": "start",
+      "rotation": 0
+    },
+    {
+      "x": 9,
+      "y": 2,
+      "type": "floor",
+      "rotation": 0,
+      "variant": "end"
+    },
+    {
+      "x": 10,
+      "y": 2,
+      "type": "door",
+      "rotation": 90
+    },
+    {
+      "x": 2,
+      "y": 4,
+      "type": "wall",
+      "rotation": 0,
+      "wallShape": "straight"
+    },
+    {
+      "x": 3,
+      "y": 4,
+      "type": "wall",
+      "rotation": 90,
+      "wallShape": "straight"
+    },
+    {
+      "x": 4,
+      "y": 4,
+      "type": "wall",
+      "rotation": 0,
+      "wallShape": "corner"
+    },
+    {
+      "x": 5,
+      "y": 4,
+      "type": "wall",
+      "rotation": 90,
+      "wallShape": "corner"
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "type": "wall",
+      "rotation": 180,
+      "wallShape": "corner"
+    },
+    {
+      "x": 7,
+      "y": 4,
+      "type": "wall",
+      "rotation": 270,
+      "wallShape": "corner"
+    },
+    {
+      "x": 8,
+      "y": 4,
+      "type": "wall",
+      "rotation": 0
+    },
+    {
+      "x": 2,
+      "y": 5,
+      "type": "wall",
+      "rotation": 0,
+      "variant": "brick",
+      "wallShape": "straight"
+    },
+    {
+      "x": 3,
+      "y": 5,
+      "type": "wall",
+      "rotation": 90,
+      "variant": "brick",
+      "wallShape": "straight"
+    },
+    {
+      "x": 4,
+      "y": 5,
+      "type": "wall",
+      "rotation": 0,
+      "variant": "brick",
+      "wallShape": "corner"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "type": "wall",
+      "rotation": 90,
+      "variant": "brick",
+      "wallShape": "corner"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "type": "wall",
+      "rotation": 180,
+      "variant": "brick",
+      "wallShape": "corner"
+    },
+    {
+      "x": 7,
+      "y": 5,
+      "type": "wall",
+      "rotation": 270,
+      "variant": "brick",
+      "wallShape": "corner"
+    },
+    {
+      "x": 8,
+      "y": 5,
+      "type": "wall",
+      "rotation": 0,
+      "variant": "brick"
+    },
+    {
+      "x": 2,
+      "y": 6,
+      "type": "wall",
+      "rotation": 0,
+      "variant": "timber",
+      "wallShape": "straight"
+    },
+    {
+      "x": 3,
+      "y": 6,
+      "type": "wall",
+      "rotation": 90,
+      "variant": "timber",
+      "wallShape": "straight"
+    },
+    {
+      "x": 4,
+      "y": 6,
+      "type": "wall",
+      "rotation": 0,
+      "variant": "timber",
+      "wallShape": "corner"
+    },
+    {
+      "x": 5,
+      "y": 6,
+      "type": "wall",
+      "rotation": 90,
+      "variant": "timber",
+      "wallShape": "corner"
+    },
+    {
+      "x": 6,
+      "y": 6,
+      "type": "wall",
+      "rotation": 180,
+      "variant": "timber",
+      "wallShape": "corner"
+    },
+    {
+      "x": 7,
+      "y": 6,
+      "type": "wall",
+      "rotation": 270,
+      "variant": "timber",
+      "wallShape": "corner"
+    },
+    {
+      "x": 8,
+      "y": 6,
+      "type": "wall",
+      "rotation": 0,
+      "variant": "timber"
+    },
+    {
+      "x": 2,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0,
+      "variant": "water"
+    },
+    {
+      "x": 3,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0,
+      "variant": "water"
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0
+    },
+    {
+      "x": 6,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0
+    },
+    {
+      "x": 10,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "type": "floor",
+      "rotation": 0
+    }
+  ],
+  "decorations": [
+    {
+      "x": 2,
+      "y": 10,
+      "type": "waterfall",
+      "rotation": 0
+    },
+    {
+      "x": 3,
+      "y": 10,
+      "type": "fountain",
+      "rotation": 90
+    },
+    {
+      "x": 4,
+      "y": 10,
+      "type": "bones",
+      "rotation": 180
+    },
+    {
+      "x": 5,
+      "y": 10,
+      "type": "barrel",
+      "rotation": 270
+    },
+    {
+      "x": 6,
+      "y": 10,
+      "type": "crate",
+      "rotation": 0
+    },
+    {
+      "x": 7,
+      "y": 10,
+      "type": "rubble",
+      "rotation": 90
+    },
+    {
+      "x": 8,
+      "y": 10,
+      "type": "cobweb",
+      "rotation": 180
+    },
+    {
+      "x": 9,
+      "y": 10,
+      "type": "torch",
+      "rotation": 270
+    },
+    {
+      "x": 10,
+      "y": 10,
+      "type": "statue",
+      "rotation": 0
+    },
+    {
+      "x": 11,
+      "y": 10,
+      "type": "column",
+      "rotation": 90
+    }
+  ]
+}
