@@ -1,3 +1,4 @@
+
 {
   "format": "wpdungeon-map-set-catalog",
   "formatVersion": 1,
@@ -11,6 +12,13 @@
       "version": 1,
       "label": "Worn Dungeon",
       "manifest": "worn-dungeon-v1/manifest.json"
+    },
+    {
+      "id": "frozen-crypt",
+      "version": 1,
+      "label": "Frozen Crypt",
+      "manifest": "frozen-dungeon-v1/manifest.json"
     }
   ]
 }
+
