@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WP Dungeon Builder V1.6.3</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#eee;background:#17191d}
+*{box-sizing:border-box}body{margin:0;padding:12px}button{min-height:46px;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px;font-weight:650}button:disabled{opacity:.4}button.active{outline:3px solid #78aaff}.bar{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.pieces{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.piece{min-width:0}.sw{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px}.help,.status{font-size:14px;color:#bbb}.workspace{overflow:auto;max-height:58vh;border:1px solid #444;border-radius:12px;padding:10px;background:#202329}.grid{display:grid;grid-template-columns:repeat(16,38px);grid-template-rows:repeat(16,38px);width:max-content;border-left:1px solid #555;border-top:1px solid #555}.cell{min-height:0;width:38px;height:38px;border:0;border-right:1px solid #555;border-bottom:1px solid #555;border-radius:0;padding:0;background:#30343a;color:#fff;font-weight:800}.cell.sel{outline:3px solid #78aaff;outline-offset:-3px}.preview{height:360px;border:1px solid #555;border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(#151820 0 48%,#373a3f 49% 100%)}.info{position:absolute;top:10px;left:10px;right:10px;background:#000b;padding:9px;border-radius:8px}.marker{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);padding:16px;border-radius:12px;font-weight:800}.walls:before,.walls:after{content:"";position:absolute;top:55px;bottom:0;width:34%;background:#555b}.walls:before{left:0;clip-path:polygon(0 0,100% 20%,100% 80%,0 100%)}.walls:after{right:0;clip-path:polygon(0 20%,100% 0,100% 100%,0 80%)}.previewBtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}.exit{grid-column:1/-1}.hidden{display:none}.status{min-height:22px;margin-top:8px}@media(min-width:650px){body{max-width:900px;margin:auto}.pieces{grid-template-columns:repeat(5,1fr)}}
+.table-size{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.table-size label{font-weight:650}.table-size select{min-height:46px;max-width:100%;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px}.table-info{font-size:14px;color:#bbb}
+.dungeon-name{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.dungeon-name label{font-weight:650}.dungeon-name input{flex:1 1 220px;min-width:0;max-width:100%;min-height:46px;font:inherit;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px}.dungeon-name input::placeholder{color:#aaa}
+.palette-group{margin:14px 0}.palette-group h3{font-size:14px;margin:0 0 7px;color:#c8ccd3}.palette-group .pieces{grid-template-columns:repeat(3,minmax(0,1fr))}.palette-group.features .pieces{grid-template-columns:repeat(2,minmax(0,1fr))}.piece{text-align:left;display:flex;gap:7px;align-items:center}.tile-swatch{display:inline-block;flex:0 0 20px;width:20px;height:20px;border-radius:3px}.cell{position:relative;overflow:hidden}.tile-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:18px;text-shadow:0 1px 3px #000}.marker{color:#fff;text-shadow:0 1px 4px #000,0 0 4px #000}
+.tile-floor{background-color:#777b7d;background-image:linear-gradient(#373c414d 1px,transparent 1px),linear-gradient(90deg,#373c414d 1px,transparent 1px);background-size:19px 19px}
+.tile-floorWood{background-color:#8b653e;background-image:repeating-linear-gradient(90deg,transparent 0 9px,#362717a8 9px 11px),repeating-linear-gradient(0deg,transparent 0 24px,#48311e80 24px 25px)}
+.tile-floorEarth{background-color:#745b3c;background-image:radial-gradient(#baa176 1px,transparent 1px),radial-gradient(#382e2370 1px,transparent 1px);background-position:0 0,5px 4px;background-size:11px 9px,13px 12px}
+.tile-floorPit{background-color:#17171c;background-image:radial-gradient(ellipse at center,#050609 0 42%,#26252b 45% 59%,#6d6862 62% 69%,#3f3c38 72%)}
+.tile-floorWater{background-color:#20556e;background-image:repeating-radial-gradient(ellipse at 20% 0,#a0d0dc55 0 1px,transparent 2px 9px);background-size:32px 20px}
+.tile-wall{background-color:#494e53;background-image:linear-gradient(#20262ba6 2px,transparent 2px),linear-gradient(90deg,#20262ba6 2px,transparent 2px);background-size:19px 13px;box-shadow:inset 0 0 0 3px #24292e}
+.tile-wallBrick{background-color:#924f3e;background-image:linear-gradient(#ceae896b 2px,transparent 2px),linear-gradient(90deg,#ceae896b 2px,transparent 2px);background-size:18px 9px;box-shadow:inset 0 0 0 3px #46291f}
+.tile-wallWood{background-color:#60432e;background-image:repeating-linear-gradient(0deg,#b28a574d 0 7px,#2f211b 7px 10px);box-shadow:inset 0 0 0 3px #30231a}
+.tile-bridge{background-color:#a47c4f;background-image:repeating-linear-gradient(0deg,transparent 0 7px,#3e2d1f 7px 10px);border-left:4px solid #d6b889;border-right:4px solid #d6b889}
+.tile-start{background-color:#237343;background-image:radial-gradient(circle,#5fab69 0 36%,#205b37 40%)}
+.tile-end{background-color:#956e1f;background-image:radial-gradient(circle,#d9b85d 0 36%,#755316 40%)}
+.tile-door{background-color:#366b88;background-image:linear-gradient(90deg,#162f3d 0 12%,transparent 12% 88%,#162f3d 88%),repeating-linear-gradient(90deg,#67879b4d 0 8px,transparent 8px 10px)}
+.wall-shape-label{font-size:13px;color:#bbb;margin:10px 0 6px}.wall-shapes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.wall-shape{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:7px 4px;min-width:0;font-size:12px}.wall-shape-icon{font-size:29px;line-height:30px;font-family:ui-monospace,monospace;font-weight:800}.tile-art.wall-straight{clip-path:polygon(0 36%,100% 36%,100% 64%,0 64%);font-size:0}.tile-art.wall-corner{clip-path:polygon(36% 0,64% 0,64% 36%,100% 36%,100% 64%,36% 64%);font-size:0}
+.decor-art{position:absolute;inset:2px;pointer-events:none;filter:drop-shadow(0 1px 1px #000b)}.decor-art svg,.decor-swatch svg,.prop-preview svg{display:block;width:100%;height:100%}.decor-swatch{display:inline-block;flex:0 0 23px;width:23px;height:23px}.palette-group summary{cursor:pointer;font-size:14px;font-weight:700;padding:8px 0;color:#c8ccd3}.decor-note{font-size:13px;color:#bbb;margin:2px 0 8px}.prop-preview{position:absolute;left:50%;top:76%;width:74px;height:74px;transform:translate(-50%,-50%);filter:drop-shadow(0 2px 3px #000b)}
+details.palette-group .pieces{grid-template-columns:repeat(2,minmax(0,1fr))}@media(min-width:650px){details.palette-group .pieces{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:650px){.palette-group.features .pieces{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Frozen Crypt uses the real uploaded surface textures in both palette and grid. */
+body.theme-frozen { --ice: #a9d5e7; }
+body.theme-frozen .tile-floor,body.theme-frozen .tile-wall,body.theme-frozen .tile-wallBrick,
+body.theme-frozen .tile-wallWood,body.theme-frozen .tile-floorWood,body.theme-frozen .tile-floorEarth,
+body.theme-frozen .tile-floorWater,body.theme-frozen .tile-bridge,body.theme-frozen .tile-door {
+  background-position:center;background-size:cover;background-repeat:repeat;
+}
+body.theme-frozen .tile-floor {background-image:url("assets/map-sets/frozen-dungeon-v1/textures/stone-floor.png");}
+body.theme-frozen .tile-wall {background-image:url("assets/map-sets/frozen-dungeon-v1/textures/stone-wall.png");}
+body.theme-frozen .tile-wallBrick {background-image:url("assets/map-sets/frozen-dungeon-v1/textures/brick-wall.png");}
+body.theme-frozen .tile-wallWood,body.theme-frozen .tile-floorWood,body.theme-frozen .tile-bridge {background-image:url("assets/map-sets/frozen-dungeon-v1/textures/timber.png");}
+body.theme-frozen .tile-floorEarth {background-image:url("assets/map-sets/frozen-dungeon-v1/textures/earth.png");}
+body.theme-frozen .tile-floorWater {background-image:url("assets/map-sets/frozen-dungeon-v1/textures/water.png");}
+body.theme-frozen .tile-door {background-image:url("assets/map-sets/frozen-dungeon-v1/textures/iron.png");}
+body.theme-frozen .tile-floorPit {background-color:#101215;background-image:radial-gradient(ellipse,#070c13 30%,#324653 70%,#c4dce5 90%);}
+body.theme-frozen .tile-start {background-color:#346b65;background-image:radial-gradient(circle,#9be4d4 30%,#24544e 65%);}
+body.theme-frozen .tile-end {background-color:#617a8c;background-image:radial-gradient(circle,#d2e9f2 30%,#536e83 65%);}
+body.theme-frozen .decor-art svg,body.theme-frozen .decor-swatch svg,body.theme-frozen .prop-preview svg {
+  filter:sepia(.25) saturate(.65) hue-rotate(155deg) brightness(1.15) drop-shadow(0 0 2px #a9e8ff);
+}
+body.theme-frozen .decor-art,body.theme-frozen .decor-swatch {background:radial-gradient(ellipse,#b4e8ff38,transparent 70%);}
+body.theme-frozen .preview {background:linear-gradient(#101b2b 0 48%,#b2c9d2 49% 100%);}
+body.theme-frozen .walls:before,body.theme-frozen .walls:after {background:#7e9ca8aa;}
+body.theme-frozen .tile-swatch {background-color:#40535c;}
+</style>
+</head>
+<body>
+<h2>WP Dungeon Builder V1.6.3</h2>
+<section id="builder">
+<div class="bar"><button id="new">New</button><button id="undo">Undo</button><button id="redo">Redo</button><button id="save">Save</button><button id="load">Load</button><button id="export">Export</button><button id="import">Import</button><input id="file" type="file" accept=".wpdungeon,.json" hidden></div>
+<p class="help">Choose a floor, wall, or feature and tap the grid to place it. Select a tile to rotate, delete, or step inside for a static player-height inspection.</p>
+<div class="dungeon-name"><label for="dungeonName">Dungeon name</label><input id="dungeonName" type="text" maxlength="80" placeholder="Dungeon_01" autocomplete="off" enterkeyhint="done"></div>
+<div class="table-size"><label for="mapSetSelect">Dungeon theme</label><select id="mapSetSelect"><option value="worn-dungeon:1">Worn Dungeon</option><option value="frozen-crypt:1">Frozen Crypt</option></select><span class="table-info">Theme changes the material and decoration previews. Export keeps stable decoration IDs.</span></div>
+<div class="table-size"><label for="tableSize">Table size</label><select id="tableSize"><option value="16">Small · 16 × 16</option><option value="20">Medium · 20 × 20</option><option value="24">Large · 24 × 24</option></select><span id="tableInfo" class="table-info" aria-live="polite"></span></div>
+<div id="palette"></div>
+<div class="bar"><button id="select">Select</button><button id="rotate">↻ Rotate</button><button id="rotateDecor" hidden>↻ Decoration</button><button id="removeDecor" hidden>Remove decoration</button><button id="delete">Delete</button><button id="step">Step In Here</button></div>
+<div class="workspace"><div class="grid" id="grid"></div></div>
+<div class="status" id="status" role="status">Ready.</div>
+</section>
+<section id="viewer" class="hidden">
+<div class="preview" id="preview"><div class="walls"></div><div class="info" id="info"></div><div class="marker" id="marker">Preview</div><div id="propPreview" class="prop-preview" role="img" hidden></div></div>
+<div class="previewBtns"><button id="left">↶ Turn Left</button><button id="up">↑ Look Up</button><button id="right">Turn Right ↷</button><button id="down">↓ Look Down</button><button id="level">Level</button><button id="exitView" class="exit">Exit View</button></div>
+</section>
+<script>
+(() => {
+"use strict";
+const TABLE_SIZES = new Map([[16, "Small"], [20, "Medium"], [24, "Large"]]);
+// A map set changes appearance, while type/variant/wallShape identify the object.
+// Map-set selection affects export identity; the editor uses its existing schematic preview.
+const DEFAULT_MAP_SET = Object.freeze({id:"worn-dungeon", version:1});
+let mapSet = {...DEFAULT_MAP_SET};
+let dungeonName = "", editingDungeonName = false;
+const T = {
+  floor: {label:"Stone floor", short:"Stone", color:"#777b7d", symbol:"·", base:"floor"},
+  floorWood: {label:"Timber floor", short:"Timber", color:"#8b653e", symbol:"", base:"floor", variant:"timber"},
+  floorEarth: {label:"Earth floor", short:"Earth", color:"#745b3c", symbol:"", base:"floor", variant:"earth"},
+  floorPit: {label:"Pit", short:"Pit", color:"#17171c", symbol:"", base:"floor", variant:"pit"},
+  floorWater: {label:"Water", short:"Water", color:"#20556e", symbol:"≈", base:"floor", variant:"water"},
+  wall: {label:"Stone wall", short:"Stone", color:"#494e53", symbol:"▰", base:"wall"},
+  wallBrick: {label:"Brick wall", short:"Brick", color:"#924f3e", symbol:"▰", base:"wall", variant:"brick"},
+  wallWood: {label:"Timber wall", short:"Timber", color:"#60432e", symbol:"▰", base:"wall", variant:"timber"},
+  bridge: {label:"Bridge", color:"#a47c4f", symbol:"↕", base:"floor", variant:"bridge"},
+  start: {label:"Start", color:"#237343", symbol:"S", base:"start"},
+  end: {label:"End", color:"#956e1f", symbol:"E", base:"floor", variant:"end"},
+  door: {label:"Door", color:"#366b88", symbol:"▯", base:"door"}
+};
+// Scenery has no collision, damage, loot, puzzle, or other gameplay effects.
+const D = {
+  waterfall: {label:"Waterfall", art:'<path d="M7 5h26v6H7z" fill="#737b82" stroke="#272f35" stroke-width="2"/><path d="M11 10h18l2 23H9z" fill="#4c9cbd"/><path d="M14 11l-1 19m7-18v19m6-20 2 20" stroke="#c5edf0" stroke-width="2"/><ellipse cx="20" cy="34" rx="15" ry="4" fill="#79c5d7"/><path d="m5 30 4 3m25-3-3 3" stroke="#c7edf2" stroke-width="2"/>'},
+  fountain: {label:"Water fountain", short:"Fountain", art:'<ellipse cx="20" cy="31" rx="16" ry="6" fill="#727d83" stroke="#29373d" stroke-width="2"/><ellipse cx="20" cy="29" rx="12" ry="4" fill="#64b8d3"/><path d="M17 16h6v14h-6z" fill="#a3a9a3"/><path d="M10 17q10 12 20 0z" fill="#b6bcb5" stroke="#485660" stroke-width="2"/><path d="M20 16V5m0 1q-10-3-10 8m10-8q10-3 10 8" fill="none" stroke="#8ed7eb" stroke-width="2.5"/><circle cx="20" cy="5" r="2" fill="#c8f3f8"/>'},
+  bones: {label:"Pile of bones", short:"Bones", art:'<g stroke="#473e31" stroke-width="1.5" fill="#e0d7b6"><path d="m7 28 22-13 2 4L9 32z"/><circle cx="7" cy="28" r="3"/><circle cx="10" cy="32" r="3"/><circle cx="29" cy="15" r="3"/><circle cx="32" cy="19" r="3"/><path d="m9 13 23 16-3 4L7 17z"/><circle cx="8" cy="13" r="3"/><circle cx="7" cy="17" r="3"/><circle cx="32" cy="29" r="3"/><circle cx="29" cy="33" r="3"/><path d="M13 10a7 7 0 1 1 14 0v7l-4 4h-6l-4-4z"/></g><circle cx="17" cy="11" r="2" fill="#302b28"/><circle cx="23" cy="11" r="2" fill="#302b28"/><path d="m20 14-2 3h4z" fill="#302b28"/>'},
+  barrel: {label:"Barrel", art:'<path d="M11 8q-7 12 0 25 9 6 18 0 7-13 0-25z" fill="#946238" stroke="#3e2b20" stroke-width="2"/><path d="M15 10q-4 11 0 23m10-23q4 11 0 23m-5-24v27" fill="none" stroke="#553b25"/><path d="M8 15h24v4H8zm0 10h24v4H8z" fill="#575d5c"/><ellipse cx="20" cy="8" rx="9" ry="4" fill="#bb8a4f" stroke="#3e2b20" stroke-width="2"/>'},
+  crate: {label:"Crate", art:'<rect x="6" y="6" width="28" height="28" rx="2" fill="#9d7548" stroke="#382d23" stroke-width="2"/><path d="M13 7v26m7-26v26m7-26v26" stroke="#63462c"/><path d="m8 8 24 24m0-24L8 32" stroke="#c79b62" stroke-width="4"/><path d="M7 7h26v26H7z" fill="none" stroke="#5c3d24" stroke-width="3"/>'},
+  rubble: {label:"Rubble", art:'<g fill="#8b8b83" stroke="#383d40" stroke-width="2"><path d="m4 25 4-8 9 2 3 11-11 5z"/><path d="m17 17 4-10 11 3 4 12-10 5z"/><path d="m20 31 4-7 10 1 2 8-8 3z"/><path d="m8 12 3-6 6 1 1 6z"/></g>'},
+  cobweb: {label:"Cobweb", art:'<g fill="none" stroke="#d3d6d2" stroke-width="1.3"><path d="M5 5h30M5 5v30M5 5l29 29M5 5l30 14M5 5l14 30"/><path d="M5 13q5-1 7-3 2-2 1-5M5 22q9 0 14-7 3-5 3-10M5 32q15-1 23-12 4-7 4-15M11 31q2-8 8-12t12-8M17 34q4-8 9-9t8-8"/></g>'},
+  torch: {label:"Torch", art:'<path d="m16 20 6 1-2 15-5-1z" fill="#8c623a" stroke="#392b22" stroke-width="2"/><path d="M14 22h10l-1-6h-8z" fill="#565d62" stroke="#252b30"/><path d="M19 3q2 7 7 10 4 9-6 11-10-1-9-9 0-5 4-9 0 8 4 5z" fill="#d95e2d"/><path d="M19 11q8 8 1 11-7-1-1-11" fill="#f7cb61"/>'},
+  statue: {label:"Statue", art:'<path d="M9 31h22v6H9z" fill="#777e7d" stroke="#343e40" stroke-width="2"/><circle cx="20" cy="9" r="6" fill="#a9afa9" stroke="#435052" stroke-width="2"/><path d="m15 15-5 15h20l-5-15z" fill="#969e99" stroke="#435052" stroke-width="2"/><path d="m17 17 3 11 3-11M20 6v5" fill="none" stroke="#d0d3c5" stroke-width="2"/>'},
+  column: {label:"Column", art:'<path d="M9 5h22v5H9zm3 5h16v21H12zM8 31h24v5H8z" fill="#a8aaa0" stroke="#414b4b" stroke-width="2"/><path d="M16 12v17m4-17v17m4-17v17" stroke="#737d78" stroke-width="2"/>'}
+};
+
+// Frozen Crypt preview art. Export IDs stay unchanged for existing Unity loaders.
+const FROZEN_DECOR = {
+  waterfall: {label:"Frozen waterfall", art:'<path d="M6 5h28v6H6z" fill="#647c89"/><path d="M9 10h22l3 24H6z" fill="#80c3db" stroke="#d3f6ff" stroke-width="2"/><path d="M12 10l2 22 6-18 5 18 3-22" fill="none" stroke="#eefaff" stroke-width="2"/><path d="M6 34h28" stroke="#dffaff" stroke-width="4"/>'},
+  fountain: {label:"Frozen fountain", art:'<ellipse cx="20" cy="31" rx="17" ry="6" fill="#7595a4" stroke="#d5f3ff" stroke-width="2"/><ellipse cx="20" cy="29" rx="12" ry="4" fill="#b5e8f5"/><path d="M17 15h6v14h-6zM10 16q10 10 20 0z" fill="#94b5c4"/><path d="M20 4l-5 11 5-3 5 3z" fill="#e6faff"/><path d="M11 26l4-7 3 9M25 27l3-8 3 8" fill="#d9faff"/>'},
+  bones: {label:"Ice-covered bones", art:'<path d="M7 27l23-14 3 5L9 32zM8 12l25 17-4 5L6 17z" fill="#d7eaf1" stroke="#728e9d" stroke-width="2"/><path d="M13 7h14l5 11-7 7H15l-7-9z" fill="#a9d9ed" stroke="#f0fcff" stroke-width="2"/><circle cx="17" cy="14" r="2" fill="#335567"/><circle cx="24" cy="14" r="2" fill="#335567"/><path d="M4 30l8-10-2 12zM28 4l8 9-10 3z" fill="#e9fbff"/>'},
+  barrel: {label:"Frozen broken barrel", art:'<path d="M9 10l7-4 6 3 9-4 3 26-11 5-13-4z" fill="#6a6870" stroke="#c4e7f3" stroke-width="2"/><path d="M10 16h23M10 27h23" stroke="#8cb5c5" stroke-width="4"/><path d="M17 10l-2 19 7-8 1 14" fill="none" stroke="#322f38" stroke-width="3"/><path d="M8 5l6 11 5-6 6 8 7-13" fill="none" stroke="#e7faff" stroke-width="2"/>'},
+  crate: {label:"Frozen broken crate", art:'<path d="M5 8l28-3 2 29-29 1z" fill="#6b6870" stroke="#d1e8f3" stroke-width="2"/><path d="M8 10l23 21M30 8L9 33" stroke="#b2a4a0" stroke-width="5"/><path d="M18 8l-3 13 8-3-2 15" fill="none" stroke="#302f38" stroke-width="3"/><path d="M5 8l6 5 5-7 6 5 6-6 6 7" fill="none" stroke="#edfbff" stroke-width="3"/>'},
+  rubble: {label:"Frozen rubble", art:'<path d="M3 29l8-15 10 7 5-13 11 19-7 8H9z" fill="#607c89" stroke="#c3e8f7" stroke-width="2"/><path d="M11 14l2 13 8-6 4 10M26 8l-2 16 13 3" fill="none" stroke="#e9fbff" stroke-width="2"/><path d="M6 31l7-7 5 10" fill="#d7f5ff"/>'},
+  cobweb: {label:"Icicles", art:'<path d="M3 5h34v6H3z" fill="#7799a8"/><path d="M5 9l4 25 5-25 4 17 4-17 4 28 4-28 4 17 3-17z" fill="#a7dff4" stroke="#effcff" stroke-width="1.5"/><path d="M9 11v17M22 11v22M30 11v13" stroke="#f8ffff" stroke-width="1.5"/>'},
+  torch: {label:"Frozen torch", art:'<path d="M17 17h6l-2 19h-5z" fill="#667c87" stroke="#d6f4ff" stroke-width="2"/><path d="M12 18h16l-3 6H15z" fill="#98cddd"/><path d="M20 3l-9 15 9-3 9 3z" fill="#a5e6ff" stroke="#f2ffff" stroke-width="2"/><path d="M20 6l-3 8h6z" fill="#e9ffff"/>'},
+  statue: {label:"Frozen statue", art:'<path d="M7 32h26v5H7z" fill="#7598a9"/><circle cx="20" cy="10" r="7" fill="#9fcbdc" stroke="#e3faff" stroke-width="2"/><path d="M15 16l-6 16h22l-6-16z" fill="#83a9ba" stroke="#e4f9ff" stroke-width="2"/><path d="M11 23l9-8 5 13M14 8l6 5 5-7" fill="none" stroke="#f1fdff" stroke-width="2"/>'},
+  column: {label:"Icebound column", art:'<path d="M7 5h26v6H7zm5 6h16v20H12zM7 31h26v6H7z" fill="#7997a6" stroke="#d8f5ff" stroke-width="2"/><path d="M16 11l-2 20m8-20 3 20" stroke="#d6f7ff" stroke-width="2"/><path d="M9 5l5 12 4-7 5 14 5-13 4 10" fill="none" stroke="#efffff" stroke-width="2"/>'}
+};
+function activeDecor(type) { return (mapSet?.id === "frozen-crypt" && mapSet?.version === 1 ? FROZEN_DECOR[type] : null) || D[type]; }
+function refreshDecorPalette() {
+  paintButtons.forEach((button, key) => {
+    if (!D[key]) return;
+    const decor = activeDecor(key);
+    button.innerHTML = `<span class="decor-swatch" aria-hidden="true">${decorSvg(key)}</span>${decor.label}`;
+    button.setAttribute("aria-label", decor.label);
+  });
+}
+function decorSvg(type) {
+  return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" stroke-linecap="round" stroke-linejoin="round">${activeDecor(type).art}</svg>`;
+}
+const PALETTE_GROUPS = [
+  ["Floors", ["floor", "floorWood", "floorEarth", "floorPit", "floorWater"]],
+  ["Walls", ["wall", "wallBrick", "wallWood"]],
+  ["Features", ["bridge", "start", "end", "door"]],
+  ["Decorations", Object.keys(D)]
+];
+// Optional variants keep the existing terrain type readable by the Unity loader.
+const PIECE_BY_EXPORT = new Map(Object.entries(T).map(([key, value]) =>
+  [`${value.base}:${value.variant || ""}`, key]));
+const OLD_MARKERS = new Set(["enemy", "treasure", "trap", "puzzle", "poison", "stairs"]);
+const WALL_SHAPES = new Map([
+  ["horizontal", {label:"Horizontal", icon:"━", shape:"straight", rotation:0}],
+  ["vertical", {label:"Vertical", icon:"┃", shape:"straight", rotation:90}],
+  ["ne", {label:"Up/right corner", short:"Corner ↗", icon:"└", shape:"corner", rotation:0}],
+  ["se", {label:"Right/down corner", short:"Corner ↘", icon:"┌", shape:"corner", rotation:90}],
+  ["sw", {label:"Down/left corner", short:"Corner ↙", icon:"┐", shape:"corner", rotation:180}],
+  ["nw", {label:"Left/up corner", short:"Corner ↖", icon:"┘", shape:"corner", rotation:270}]
+]);
+const paintButtons = new Map(), wallShapeButtons = new Map();
+let wallMaterial = "wall", wallShapeKey = "horizontal";
+let W = 16, H = 16;
+let cells = Array(W * H).fill(null), tool = "floor", sel = -1;
+let decorations = Array(W * H).fill(null);
+let u = [], r = [], facing = 0, look = 0;
+const $ = id => document.getElementById(id);
+const grid = $("grid"), pal = $("palette"), status = $("status");
+
+function snapshot() { return JSON.stringify({width: W, height: H, cells, decorations, mapSet, dungeonName}); }
+function checkpoint() {
+  editingDungeonName = false;
+  u.push(snapshot());
+  if (u.length > 60) u.shift();
+  r = [];
+}
+function restore(saved) {
+  const state = JSON.parse(saved);
+  W = state.width;
+  H = state.height;
+  cells = state.cells;
+  decorations = state.decorations || Array(W * H).fill(null);
+  mapSet = state.mapSet ? {...state.mapSet} : {...DEFAULT_MAP_SET};
+  dungeonName = state.dungeonName || "";
+  editingDungeonName = false;
+  sel = -1;
+  render();
+}
+function msg(text) { status.textContent = text; }
+function normalizeDungeonName(value) {
+  return Array.from(value.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim()).slice(0, 80).join("");
+}
+function dungeonFilename() {
+  let stem = dungeonName.normalize("NFKC")
+    .replace(/(?:\.wpdungeon(?:\.json)?|\.json)$/i, "")
+    .replace(/[<>:"/\\|?*\u0000-\u001f\u007f]/g, "_")
+    .replace(/\s+/g, "_").replace(/_+/g, "_")
+    .replace(/^[._]+|[._]+$/g, "");
+  stem = Array.from(stem).slice(0, 60).join("").replace(/[._]+$/g, "") || "Dungeon_01";
+  if (/^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\.|$)/i.test(stem)) stem = "Dungeon_" + stem;
+  return stem + ".wpdungeon";
+}
+$("dungeonName").oninput = () => {
+  const nextName = normalizeDungeonName($("dungeonName").value);
+  if (nextName === dungeonName) return;
+  // One undo step for a typing session, without rebuilding the grid or moving the cursor.
+  if (!editingDungeonName) { checkpoint(); editingDungeonName = true; }
+  dungeonName = nextName;
+  $("undo").disabled = !u.length;
+  $("redo").disabled = !r.length;
+};
+function finishNaming() {
+  editingDungeonName = false;
+  $("dungeonName").value = dungeonName;
+}
+$("dungeonName").onchange = finishNaming;
+$("dungeonName").onblur = finishNaming;
+function pieceLabel(piece) {
+  const label = T[piece.type].label;
+  if (T[piece.type].base !== "wall" || !piece.shape) return label;
+  if (piece.shape === "straight") return label + (piece.rot % 180 === 0 ? " · Horizontal" : " · Vertical");
+  const shape = [...WALL_SHAPES.values()].find(s => s.shape === "corner" && s.rotation === piece.rot);
+  return label + (shape ? " · " + shape.label : " · Corner");
+}
+function cellLabel(i) {
+  const base = cells[i] ? pieceLabel(cells[i]) : "Empty space";
+  return decorations[i] ? base + " with " + activeDecor(decorations[i].type).label : base;
+}
+function syncPaintButtons() {
+  paintButtons.forEach((button, key) => {
+    button.classList.toggle("active", tool === key);
+    button.setAttribute("aria-pressed", String(tool === key));
+  });
+  $("select").classList.toggle("active", tool === "select");
+  wallShapeButtons.forEach((button, key) => {
+    const active = T[tool]?.base === "wall" && wallShapeKey === key;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+function choosePaintTool(key) {
+  tool = key;
+  sel = -1;
+  if (T[key]?.base === "wall") wallMaterial = key;
+  render();
+  if (D[key]) { msg("Decorate: " + D[key].label + ". Visual only."); return; }
+  const shape = WALL_SHAPES.get(wallShapeKey);
+  msg("Paint: " + pieceLabel({type:key, ...(T[key].base === "wall" ? {shape:shape.shape, rot:shape.rotation} : {})}));
+}
+
+function buildGrid() {
+  const shape = `${W}x${H}`;
+  if (grid.dataset.shape === shape) return;
+  grid.style.gridTemplateColumns = `repeat(${W},38px)`;
+  grid.style.gridTemplateRows = `repeat(${H},38px)`;
+  const fragment = document.createDocumentFragment();
+  for (let i = 0; i < W * H; i++) {
+    const b = document.createElement("button");
+    b.className = "cell";
+    b.onclick = () => {
+      if (tool === "select") {
+        sel = i;
+        render();
+        msg(`Selected ${cellLabel(i)} at ${i % W},${Math.floor(i / W)}`);
+        return;
+      }
+      checkpoint();
+      if (D[tool]) decorations[i] = {type:tool, rot:0};
+      else {
+        const shape = T[tool].base === "wall" ? WALL_SHAPES.get(wallShapeKey) : null;
+        cells[i] = {type: tool, rot: shape ? shape.rotation : 0, ...(shape ? {shape:shape.shape} : {})};
+      }
+      sel = i;
+      render();
+    };
+    fragment.appendChild(b);
+  }
+  grid.replaceChildren(fragment);
+  grid.dataset.shape = shape;
+}
+
+function syncMapSetSelect() {
+  const select = $("mapSetSelect");
+  const key = mapSet ? mapSet.id + ":" + mapSet.version : "worn-dungeon:1";
+  [...select.options].filter(o => o.dataset.unknown === "true").forEach(o => o.remove());
+  if (![...select.options].some(o => o.value === key)) {
+    const option = new Option("Imported theme (" + key + ")", key);
+    option.dataset.unknown = "true";
+    select.add(option);
+  }
+  select.value = key;
+}
+$("mapSetSelect").onchange = () => {
+  const [id, version] = $("mapSetSelect").value.split(":");
+  checkpoint();
+  mapSet = {id, version:Number(version)};
+  render();
+  msg("Theme selected: " + $("mapSetSelect").selectedOptions[0].text + ". Tiles and decorations updated.");
+};
+
+function render() {
+  syncMapSetSelect();
+  document.body.classList.toggle("theme-frozen", mapSet?.id === "frozen-crypt" && mapSet?.version === 1);
+  buildGrid();
+  syncPaintButtons();
+  refreshDecorPalette();
+  [...grid.children].forEach((b, i) => {
+    const v = cells[i], prop = decorations[i];
+    b.classList.toggle("sel", i === sel);
+    b.style.background = v && T[v.type].base !== "wall" && !document.body.classList.contains("theme-frozen") ? T[v.type].color : "#30343a";
+    const shapeClass = v && T[v.type].base === "wall" && v.shape ? " wall-" + v.shape : "";
+    const baseArt = v
+      ? `<span class="tile-art tile-${v.type}${shapeClass}" style="transform:rotate(${v.rot}deg)">${T[v.type].symbol}</span>`
+      : "";
+    b.innerHTML = baseArt + (prop ? `<span class="decor-art" style="transform:rotate(${prop.rot}deg)">${decorSvg(prop.type)}</span>` : "");
+    b.setAttribute("aria-label", `${cellLabel(i)}, column ${i % W + 1}, row ${Math.floor(i / W) + 1}`);
+  });
+  $("tableSize").value = String(W);
+  $("dungeonName").value = dungeonName;
+  $("tableInfo").textContent = `${W * H} squares`;
+  $("rotate").disabled = sel < 0 || !cells[sel];
+  $("delete").disabled = sel < 0 || (!cells[sel] && !decorations[sel]);
+  const hasDecor = sel >= 0 && Boolean(decorations[sel]);
+  $("rotateDecor").hidden = !hasDecor;
+  $("removeDecor").hidden = !hasDecor;
+  $("rotateDecor").disabled = !hasDecor;
+  $("removeDecor").disabled = !hasDecor;
+  $("step").disabled = sel < 0 || !cells[sel] || T[cells[sel]?.type]?.base === "wall";
+  $("undo").disabled = !u.length;
+  $("redo").disabled = !r.length;
+}
+
+function resizeTable(side) {
+  if (!TABLE_SIZES.has(side)) {
+    $("tableSize").value = String(W);
+    return;
+  }
+  if (side === W && side === H) return;
+  const outside = cells.reduce((count, v, i) => count +
+    ((v || decorations[i]) && (i % W >= side || Math.floor(i / W) >= side) ? 1 : 0), 0);
+  if (outside) {
+    $("tableSize").value = String(W);
+    msg(`Cannot shrink: ${outside} placed tile${outside === 1 ? " is" : "s are"} outside ${side} × ${side}. Move or delete ${outside === 1 ? "it" : "them"} first.`);
+    return;
+  }
+  const resized = Array(side * side).fill(null);
+  const resizedDecor = Array(side * side).fill(null);
+  cells.forEach((v, i) => {
+    if (v) resized[Math.floor(i / W) * side + i % W] = v;
+  });
+  decorations.forEach((v, i) => {
+    if (v) resizedDecor[Math.floor(i / W) * side + i % W] = v;
+  });
+  checkpoint();
+  W = side;
+  H = side;
+  cells = resized;
+  decorations = resizedDecor;
+  sel = -1;
+  render();
+  msg(`${TABLE_SIZES.get(side)} table: ${side} × ${side}. Placed tiles kept in position.`);
+}
+$("tableSize").onchange = () => resizeTable(Number($("tableSize").value));
+
+PALETTE_GROUPS.forEach(([title, keys]) => {
+  const isDecor = title === "Decorations";
+  const group = document.createElement(isDecor ? "details" : "section");
+  group.className = "palette-group" + (title === "Features" ? " features" : "");
+  const heading = document.createElement(isDecor ? "summary" : "h3");
+  heading.textContent = title;
+  const choices = document.createElement("div");
+  choices.className = "pieces";
+  keys.forEach(key => {
+    const value = T[key] || D[key], b = document.createElement("button");
+    b.className = "piece" + (key === tool ? " active" : "");
+    b.dataset.piece = key;
+    b.setAttribute("aria-label", value.label);
+    b.innerHTML = (D[key]
+      ? `<span class="decor-swatch" aria-hidden="true">${decorSvg(key)}</span>`
+      : `<span class="tile-swatch tile-${key}" aria-hidden="true"></span>`) + (value.short || value.label);
+    b.onclick = () => choosePaintTool(key);
+    paintButtons.set(key, b);
+    choices.appendChild(b);
+  });
+  group.appendChild(heading);
+  if (isDecor) {
+    const note = document.createElement("p");
+    note.className = "decor-note";
+    note.textContent = "Visual only. Place over terrain, then select to rotate or remove the decoration.";
+    group.appendChild(note);
+  }
+  group.appendChild(choices);
+  if (title === "Walls") {
+    const label = document.createElement("p");
+    label.className = "wall-shape-label";
+    label.textContent = "Wall shape";
+    const shapes = document.createElement("div");
+    shapes.className = "wall-shapes";
+    WALL_SHAPES.forEach((shape, key) => {
+      const b = document.createElement("button");
+      b.className = "wall-shape";
+      b.dataset.wallShape = key;
+      b.setAttribute("aria-label", "Wall shape: " + shape.label);
+      b.innerHTML = `<span class="wall-shape-icon" aria-hidden="true">${shape.icon}</span><span>${shape.short || shape.label}</span>`;
+      b.onclick = () => {
+        wallShapeKey = key;
+        choosePaintTool(wallMaterial);
+      };
+      wallShapeButtons.set(key, b);
+      shapes.appendChild(b);
+    });
+    group.appendChild(label);
+    group.appendChild(shapes);
+  }
+  pal.appendChild(group);
+});
+$("select").onclick = () => {
+  tool = "select";
+  syncPaintButtons();
+  msg("Select mode.");
+};
+$("rotate").onclick = () => {
+  if (sel < 0 || !cells[sel]) return;
+  checkpoint();
+  cells[sel].rot = (cells[sel].rot + 90) % 360;
+  render();
+  msg("Rotated: " + pieceLabel(cells[sel]));
+};
+$("delete").onclick = () => {
+  if (sel < 0 || (!cells[sel] && !decorations[sel])) return;
+  checkpoint();
+  cells[sel] = null;
+  decorations[sel] = null;
+  render();
+  msg("Tile deleted.");
+};
+$("rotateDecor").onclick = () => {
+  if (sel < 0 || !decorations[sel]) return;
+  checkpoint();
+  decorations[sel].rot = (decorations[sel].rot + 90) % 360;
+  render();
+  msg("Rotated decoration: " + activeDecor(decorations[sel].type).label);
+};
+$("removeDecor").onclick = () => {
+  if (sel < 0 || !decorations[sel]) return;
+  checkpoint();
+  decorations[sel] = null;
+  render();
+  msg("Decoration removed.");
+};
+$("undo").onclick = () => {
+  if (!u.length) return;
+  r.push(snapshot());
+  restore(u.pop());
+  msg("Undone.");
+};
+$("redo").onclick = () => {
+  if (!r.length) return;
+  u.push(snapshot());
+  restore(r.pop());
+  msg("Redone.");
+};
+$("new").onclick = () => {
+  checkpoint();
+  dungeonName = "";
+  if (!mapSet) mapSet = {...DEFAULT_MAP_SET};
+  cells = Array(W * H).fill(null);
+  decorations = Array(W * H).fill(null);
+  sel = -1;
+  render();
+  msg(`New ${TABLE_SIZES.get(W).toLowerCase()} dungeon.`);
+};
+
+function pack() {
+  const props = decorations.map((v, i) => v
+    ? {x:i % W, y:Math.floor(i / W), type:v.type, rotation:v.rot}
+    : null).filter(Boolean);
+  return {
+    format: "wpdungeon", formatVersion: 1, width: W, height: H,
+    ...(dungeonName ? {name:dungeonName} : {}),
+    ...(mapSet ? {mapSet:{...mapSet}} : {}),
+    tiles: cells.map((v, i) => {
+      if (!v) return null;
+      const piece = T[v.type];
+      return {x: i % W, y: Math.floor(i / W), type: piece.base, rotation: v.rot,
+        ...(piece.variant ? {variant: piece.variant} : {}),
+        ...(piece.base === "wall" && v.shape ? {wallShape:v.shape} : {})};
+    }).filter(Boolean),
+    ...(props.length ? {decorations:props} : {})
+  };
+}
+function unpack(d) {
+  if (!d || d.format !== "wpdungeon" || d.formatVersion !== 1 || !Array.isArray(d.tiles)) {
+    throw Error("Invalid WP Dungeon V1 file.");
+  }
+  if (d.decorations !== undefined && !Array.isArray(d.decorations)) {
+    throw Error("Invalid decorations. Current dungeon kept.");
+  }
+  if (d.name !== undefined && typeof d.name !== "string") {
+    throw Error("Invalid dungeon name. Current dungeon kept.");
+  }
+  const importedName = normalizeDungeonName(d.name || "");
+  let importedMapSet = {...DEFAULT_MAP_SET};
+  if (d.mapSet !== undefined) {
+    const candidate = d.mapSet;
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate) ||
+        typeof candidate.id !== "string" || !/^[a-z0-9][a-z0-9-]{0,63}$/.test(candidate.id) ||
+        !Number.isSafeInteger(candidate.version) || candidate.version < 1) {
+      throw Error("Invalid map set. Current dungeon kept.");
+    }
+    // Keep valid future set identities even before this builder can preview them.
+    importedMapSet = {id:candidate.id, version:candidate.version};
+  }
+  const width = d.width ?? 16, height = d.height ?? 16;
+  if (!TABLE_SIZES.has(width) || height !== width) {
+    throw Error("Supported tables are 16 × 16, 20 × 20, and 24 × 24. Current dungeon kept.");
+  }
+  const imported = Array(width * height).fill(null);
+  const importedDecor = Array(width * height).fill(null);
+  let replacedMarkers = 0, convertedPits = 0;
+  d.tiles.forEach(t => {
+    if (t && Number.isInteger(t.x) && Number.isInteger(t.y) &&
+        t.x >= 0 && t.x < width && t.y >= 0 && t.y < height) {
+      let key;
+      if (t.type === "pit") { key = "floorPit"; convertedPits++; }
+      else if (OLD_MARKERS.has(t.type)) { key = "floor"; replacedMarkers++; }
+      else key = PIECE_BY_EXPORT.get(`${t.type}:${t.variant || ""}`) ||
+        PIECE_BY_EXPORT.get(`${t.type}:`);
+      if (!key) return;
+      imported[t.y * width + t.x] = {
+        type: key, rot: [0, 90, 180, 270].includes(t.rotation) ? t.rotation : 0,
+        ...(T[key].base === "wall" && ["straight", "corner"].includes(t.wallShape) ? {shape:t.wallShape} : {})
+      };
+    }
+  });
+  (d.decorations || []).forEach(t => {
+    if (t && Number.isInteger(t.x) && Number.isInteger(t.y) &&
+        t.x >= 0 && t.x < width && t.y >= 0 && t.y < height &&
+        Object.prototype.hasOwnProperty.call(D, t.type)) {
+      importedDecor[t.y * width + t.x] = {
+        type:t.type, rot:[0, 90, 180, 270].includes(t.rotation) ? t.rotation : 0
+      };
+    }
+  });
+  checkpoint();
+  W = width;
+  H = height;
+  cells = imported;
+  decorations = importedDecor;
+  mapSet = importedMapSet;
+  dungeonName = importedName;
+  sel = -1;
+  render();
+  const notes = [];
+  if (typeof d.name === "string" && Array.from(d.name).length > 80) notes.push("Dungeon name shortened to 80 characters.");
+  if (replacedMarkers) notes.push(`${replacedMarkers} old card/stair marker${replacedMarkers === 1 ? "" : "s"} changed to floor.`);
+  if (convertedPits) notes.push(`${convertedPits} old pit tile${convertedPits === 1 ? "" : "s"} restored as decorative pits.`);
+  return notes.length ? " " + notes.join(" ") : "";
+}
+$("save").onclick = () => {
+  try {
+    localStorage.setItem("wpdungeon-v1", JSON.stringify(pack()));
+    msg("Saved on this device/browser.");
+  } catch (e) { msg("Storage unavailable. Use Export."); }
+};
+$("load").onclick = () => {
+  try {
+    const saved = localStorage.getItem("wpdungeon-v1");
+    if (!saved) return msg("No saved dungeon.");
+    const note = unpack(JSON.parse(saved));
+    msg("Dungeon loaded." + note);
+  } catch (e) { msg(e.message || "Could not load save."); }
+};
+$("export").onclick = () => {
+  const blob = new Blob([JSON.stringify(pack(), null, 2)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = dungeonFilename();
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  msg("Exported: " + a.download);
+};
+$("import").onclick = () => $("file").click();
+$("file").onchange = async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const note = unpack(JSON.parse(await file.text()));
+    msg("Dungeon imported." + note);
+  } catch (x) { msg(x.message || "Invalid WP Dungeon V1 file."); }
+  e.target.value = "";
+};
+
+function view() {
+  const dirs = ["North", "East", "South", "West"], v = cells[sel];
+  const prop = decorations[sel];
+  $("info").textContent = `Tile ${sel % W},${Math.floor(sel / W)} • Facing ${dirs[(facing % 4 + 4) % 4]} • ${look === 0 ? "Level" : look > 0 ? "Looking up" : "Looking down"}` + (prop ? " • " + activeDecor(prop.type).label + " (decoration)" : "");
+  $("marker").textContent = T[v.type].label;
+  $("marker").className = "marker tile-" + v.type;
+  $("marker").style.backgroundColor = document.body.classList.contains("theme-frozen") ? "" : T[v.type].color;
+  $("propPreview").hidden = !prop;
+  $("propPreview").innerHTML = prop ? decorSvg(prop.type) : "";
+  if (prop) {
+    $("propPreview").style.transform = `translate(-50%,-50%) rotate(${prop.rot}deg)`;
+    $("propPreview").setAttribute("aria-label", activeDecor(prop.type).label + " decoration");
+  }
+  $("preview").style.transform = `perspective(700px) rotateX(${look * 4}deg)`;
+}
+$("step").onclick = () => {
+  if (sel < 0 || !cells[sel]) return;
+  facing = Math.round(cells[sel].rot / 90);
+  look = 0;
+  $("builder").classList.add("hidden");
+  $("viewer").classList.remove("hidden");
+  view();
+};
+$("left").onclick = () => { facing--; view(); };
+$("right").onclick = () => { facing++; view(); };
+$("up").onclick = () => { look = Math.min(2, look + 1); view(); };
+$("down").onclick = () => { look = Math.max(-2, look - 1); view(); };
+$("level").onclick = () => { look = 0; view(); };
+$("exitView").onclick = () => {
+  $("viewer").classList.add("hidden");
+  $("builder").classList.remove("hidden");
+};
+render();
+})();
+</script>
+</body>
+</html>
