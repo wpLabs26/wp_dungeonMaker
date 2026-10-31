@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>WP Dungeon Builder V1.6.4</title>
+<title>WP Dungeon Builder V1.7.1</title>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#eee;background:#17191d}
 *{box-sizing:border-box}body{margin:0;padding:12px}button{min-height:46px;font-size:16px;border:1px solid #555;border-radius:10px;background:#292c31;color:#fff;padding:8px 11px;font-weight:650}button:disabled{opacity:.4}button.active{outline:3px solid #78aaff}.bar{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.pieces{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.piece{min-width:0}.sw{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px}.help,.status{font-size:14px;color:#bbb}.workspace{overflow:auto;max-height:58vh;border:1px solid #444;border-radius:12px;padding:10px;background:#202329}.grid{display:grid;grid-template-columns:repeat(16,38px);grid-template-rows:repeat(16,38px);width:max-content;border-left:1px solid #555;border-top:1px solid #555}.cell{min-height:0;width:38px;height:38px;border:0;border-right:1px solid #555;border-bottom:1px solid #555;border-radius:0;padding:0;background:#30343a;color:#fff;font-weight:800}.cell.sel{outline:3px solid #78aaff;outline-offset:-3px}.preview{height:360px;border:1px solid #555;border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(#151820 0 48%,#373a3f 49% 100%)}.info{position:absolute;top:10px;left:10px;right:10px;background:#000b;padding:9px;border-radius:8px}.marker{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);padding:16px;border-radius:12px;font-weight:800}.walls:before,.walls:after{content:"";position:absolute;top:55px;bottom:0;width:34%;background:#555b}.walls:before{left:0;clip-path:polygon(0 0,100% 20%,100% 80%,0 100%)}.walls:after{right:0;clip-path:polygon(0 20%,100% 0,100% 100%,0 80%)}.previewBtns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px}.exit{grid-column:1/-1}.hidden{display:none}.status{min-height:22px;margin-top:8px}@media(min-width:650px){body{max-width:900px;margin:auto}.pieces{grid-template-columns:repeat(5,1fr)}}
@@ -53,27 +53,27 @@ body.theme-frozen .walls:before,body.theme-frozen .walls:after {background:#7e9c
 body.theme-frozen .tile-swatch {background-color:#40535c;}
 
 /* Infernal Realm asset-backed preview; textures live outside this HTML. */
-body.theme-infernal .tile-floor{background-image:url("assets/map-sets/inferno/textures/stone-floor.png");background-position:center;background-size:cover;background-repeat:repeat;}
-body.theme-infernal .tile-floorWood{background-image:url("assets/map-sets/inferno/textures/timber-floor.png");background-position:center;background-size:cover;background-repeat:repeat;}
-body.theme-infernal .tile-floorEarth{background-image:url("assets/map-sets/inferno/textures/cracked-lava-floor.png");background-position:center;background-size:cover;background-repeat:repeat;}
-body.theme-infernal .tile-floorPit{background-image:url("assets/map-sets/inferno/textures/pit.png");background-position:center;background-size:cover;background-repeat:repeat;}
-body.theme-infernal .tile-floorWater{background-image:url("assets/map-sets/inferno/textures/lava.png");background-position:center;background-size:cover;background-repeat:repeat;}
-body.theme-infernal .tile-wall{background-image:url("assets/map-sets/inferno/textures/stone-wall.png");background-position:center;background-size:cover;background-repeat:repeat;}
-body.theme-infernal .tile-wallBrick{background-image:url("assets/map-sets/inferno/textures/brick-wall.png");background-position:center;background-size:cover;background-repeat:repeat;}
-body.theme-infernal .tile-wallWood{background-image:url("assets/map-sets/inferno/textures/timber-wall.png");background-position:center;background-size:cover;background-repeat:repeat;}
-body.theme-infernal .tile-bridge{background-image:url("assets/map-sets/inferno/textures/bridge.png");background-position:center;background-size:cover;background-repeat:repeat;}
-body.theme-infernal .tile-door{background-image:url("assets/map-sets/inferno/textures/iron.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-floor{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/stone-floor.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-floorWood{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/timber-floor.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-floorEarth{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/cracked-lava-floor.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-floorPit{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/pit.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-floorWater{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/lava.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-wall{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/stone-wall.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-wallBrick{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/brick-wall.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-wallWood{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/timber-wall.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-bridge{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/bridge.png");background-position:center;background-size:cover;background-repeat:repeat;}
+body.theme-infernal .tile-door{background-image:url("https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/textures/iron.png");background-position:center;background-size:cover;background-repeat:repeat;}
 body.theme-infernal .preview{background:linear-gradient(#1b1115 0 48%,#44312c 49% 100%)}
 body.theme-infernal .walls:before,body.theme-infernal .walls:after{background:#352b2d}
 </style>
 </head>
 <body>
-<h2>WP Dungeon Builder V1.6.4</h2>
+<h2>WP Dungeon Builder V1.7.1</h2>
 <section id="builder">
 <div class="bar"><button id="new">New</button><button id="undo">Undo</button><button id="redo">Redo</button><button id="save">Save</button><button id="load">Load</button><button id="export">Export</button><button id="import">Import</button><input id="file" type="file" accept=".wpdungeon,.json" hidden></div>
 <p class="help">Choose a floor, wall, or feature and tap the grid to place it. Select a tile to rotate, delete, or step inside for a static player-height inspection.</p>
 <div class="dungeon-name"><label for="dungeonName">Dungeon name</label><input id="dungeonName" type="text" maxlength="80" placeholder="Dungeon_01" autocomplete="off" enterkeyhint="done"></div>
-<div class="table-size"><label for="mapSetSelect">Dungeon theme</label><select id="mapSetSelect"><option value="worn-dungeon:1">Worn Dungeon</option><option value="frozen-crypt:1">Frozen Crypt</option><option value="infernal-realm:1">Infernal Realm</option></select><span class="table-info">Theme changes the material and decoration previews. Export keeps stable decoration IDs.</span></div>
+<div class="table-size"><label for="mapSetSelect">Dungeon theme</label><select id="mapSetSelect"><option value="worn-dungeon:1">Worn Dungeon</option><option value="frozen-crypt:1">Frozen Crypt</option><option value="infernal-realm:1">Infernal Realm</option><option value="ancient-rome:1">Ancient Rome</option><option value="graveyard:1">Graveyard</option><option value="celtic:1">Celtic</option><option value="ancient-egypt:1">Ancient Egypt</option><option value="underwater:1">Underwater</option><option value="ocean-side:1">Ocean Side</option><option value="broken-city:1">Broken City</option><option value="broken-village:1">Broken Village</option><option value="castle:1">Castle</option><option value="prison:1">Prison</option><option value="haunted:1">Haunted</option><option value="cursed:1">Cursed</option></select><span class="table-info">Select any theme. Rome assets included; future themes use fallback art until their PNG folders are uploaded. Export keeps stable IDs.</span></div>
 <div class="table-size"><label for="tableSize">Table size</label><select id="tableSize"><option value="16">Small · 16 × 16</option><option value="20">Medium · 20 × 20</option><option value="24">Large · 24 × 24</option></select><span id="tableInfo" class="table-info" aria-live="polite"></span></div>
 <div id="palette"></div>
 <div class="bar"><button id="select">Select</button><button id="rotate">↻ Rotate</button><button id="rotateDecor" hidden>↻ Decoration</button><button id="removeDecor" hidden>Remove decoration</button><button id="delete">Delete</button><button id="step">Step In Here</button></div>
@@ -146,9 +146,43 @@ const INFERNAL_TILE_LABELS = {
  wallBrick:"Infernal brick wall", wallWood:"Scorched wall",
  bridge:"Iron bridge", door:"Infernal gate"
 };
+
+// Theme registry: add each pack under assets/map-sets/<folder>/, no builder edit needed.
+const PACK_THEMES = {
+  "ancient-rome":{folder:"ancient-rome-v1",label:"Ancient Rome"},
+  "graveyard":{folder:"graveyard-v1",label:"Graveyard"},
+  "celtic":{folder:"celtic-v1",label:"Celtic"},
+  "ancient-egypt":{folder:"ancient-egypt-v1",label:"Ancient Egypt"},
+  "underwater":{folder:"underwater-v1",label:"Underwater"},
+  "ocean-side":{folder:"ocean-side-v1",label:"Ocean Side"},
+  "broken-city":{folder:"broken-city-v1",label:"Broken City"},
+  "broken-village":{folder:"broken-village-v1",label:"Broken Village"},
+  "castle":{folder:"castle-v1",label:"Castle"},
+  "prison":{folder:"prison-v1",label:"Prison"},
+  "haunted":{folder:"haunted-v1",label:"Haunted"},
+  "cursed":{folder:"cursed-v1",label:"Cursed"}
+};
+const PACK_BASE = "https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/";
+const PACK_TILE_FILES = {floor:"stone-floor.png",floorWood:"timber-floor.png",floorEarth:"earth.png",floorPit:"pit.png",floorWater:"water.png",wall:"stone-wall.png",wallBrick:"brick-wall.png",wallWood:"timber-wall.png",bridge:"bridge.png",door:"iron.png"};
+const ROME_TILE_LABELS = {floor:"Marble floor",floorWood:"Mosaic floor",floorEarth:"Sandstone floor",floorPit:"Collapsed pit",floorWater:"Aqueduct water",wall:"Roman stone wall",wallBrick:"Roman brick wall",wallWood:"Timber barricade",bridge:"Stone bridge",door:"Iron gate"};
+const ROME_DECOR_LABELS = {waterfall:"Aqueduct cascade",fountain:"Roman fountain",bones:"Ancient remains",barrel:"Wine barrel",crate:"Supply crate",rubble:"Ruined masonry",cobweb:"Amphora",torch:"Roman brazier",statue:"Marble statue",column:"Roman column"};
+function packTheme(){return mapSet?.version===1 ? PACK_THEMES[mapSet.id] : null;}
+function packAsset(kind,file){return PACK_BASE+packTheme().folder+"/"+kind+"/"+file;}
+// Generated CSS loads external assets from the repository. Missing future packs keep base-color fallback.
+function updatePackStyles(){
+ let style=document.getElementById("externalPackStyles");
+ if(!style){style=document.createElement("style");style.id="externalPackStyles";document.head.appendChild(style);}
+ const theme=packTheme();
+ if(!theme){style.textContent="";return;}
+ const rules=Object.entries(PACK_TILE_FILES).map(([key,file])=>
+   `body.theme-pack .tile-${key}{background-image:url("${packAsset("textures",file)}");background-size:cover;background-position:center;background-repeat:repeat;}`);
+ style.textContent=rules.join("\n")+"\nbody.theme-pack .preview{background:linear-gradient(#37312d 0 48%,#b5a48c 49% 100%)}";
+}
+
 function infernalActive(){return mapSet?.id==="infernal-realm" && mapSet?.version===1;}
-function activeTileLabel(key){return infernalActive() ? (INFERNAL_TILE_LABELS[key] || T[key].label) : T[key].label;}
+function activeTileLabel(key){return packTheme() && mapSet.id==="ancient-rome" ? (ROME_TILE_LABELS[key] || T[key].label) : infernalActive() ? (INFERNAL_TILE_LABELS[key] || T[key].label) : T[key].label;}
 function activeDecor(type) {
+ if(packTheme()) return {label:mapSet.id==="ancient-rome" ? (ROME_DECOR_LABELS[type] || D[type].label) : D[type].label, art:D[type].art};
  if(infernalActive()) return {label:INFERNAL_LABELS[type] || D[type].label, art:D[type].art};
  return (mapSet?.id === "frozen-crypt" && mapSet?.version === 1 ? FROZEN_DECOR[type] : null) || D[type];
 }
@@ -170,7 +204,12 @@ function refreshDecorPalette() {
   });
 }
 function decorSvg(type) {
-  if(infernalActive()) return `<img src="assets/map-sets/inferno/decorations/${type}.png" alt="" style="display:block;width:100%;height:100%;object-fit:contain">`;
+  if(packTheme()) {
+    // SVG is the fallback until a future theme's PNG pack is uploaded.
+    const svg=`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:none;width:100%;height:100%">${D[type].art}</svg>`;
+    return `<span style="display:block;width:100%;height:100%"><img src="${packAsset("decorations",type+".png")}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" style="display:block;width:100%;height:100%;object-fit:contain">${svg}</span>`;
+  }
+  if(infernalActive()) return `<img src="https://raw.githubusercontent.com/wpLabs26/wp_dungeonMaker/main/assets/map-sets/inferno/decorations/${type}.png" alt="" style="display:block;width:100%;height:100%;object-fit:contain">`;
   return `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" stroke-linecap="round" stroke-linejoin="round">${activeDecor(type).art}</svg>`;
 }
 const PALETTE_GROUPS = [
@@ -335,6 +374,8 @@ function render() {
   syncMapSetSelect();
   document.body.classList.toggle("theme-frozen", mapSet?.id === "frozen-crypt" && mapSet?.version === 1);
   document.body.classList.toggle("theme-infernal", infernalActive());
+  document.body.classList.toggle("theme-pack", !!packTheme());
+  updatePackStyles();
   buildGrid();
   syncPaintButtons();
   refreshDecorPalette();
@@ -342,7 +383,7 @@ function render() {
   [...grid.children].forEach((b, i) => {
     const v = cells[i], prop = decorations[i];
     b.classList.toggle("sel", i === sel);
-    b.style.background = v && T[v.type].base !== "wall" && !document.body.classList.contains("theme-frozen") && !infernalActive() ? T[v.type].color : "#30343a";
+    b.style.background = v && T[v.type].base !== "wall" && !document.body.classList.contains("theme-frozen") && !infernalActive() && !packTheme() ? T[v.type].color : "#30343a";
     const shapeClass = v && T[v.type].base === "wall" && v.shape ? " wall-" + v.shape : "";
     const baseArt = v
       ? `<span class="tile-art tile-${v.type}${shapeClass}" style="transform:rotate(${v.rot}deg)">${T[v.type].symbol}</span>`
@@ -632,7 +673,7 @@ function view() {
   $("info").textContent = `Tile ${sel % W},${Math.floor(sel / W)} • Facing ${dirs[(facing % 4 + 4) % 4]} • ${look === 0 ? "Level" : look > 0 ? "Looking up" : "Looking down"}` + (prop ? " • " + activeDecor(prop.type).label + " (decoration)" : "");
   $("marker").textContent = activeTileLabel(v.type);
   $("marker").className = "marker tile-" + v.type;
-  $("marker").style.backgroundColor = (document.body.classList.contains("theme-frozen") || infernalActive()) ? "" : T[v.type].color;
+  $("marker").style.backgroundColor = (document.body.classList.contains("theme-frozen") || infernalActive() || !!packTheme()) ? "" : T[v.type].color;
   $("propPreview").hidden = !prop;
   $("propPreview").innerHTML = prop ? decorSvg(prop.type) : "";
   if (prop) {
